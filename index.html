@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Keuangan Rumah Tangga</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script defer src="script.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <div class="max-w-3xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-6">
+    <h1 class="text-2xl font-bold text-center mb-6">📊 Keuangan Rumah Tangga</h1>
+
+    <!-- Input Pendapatan -->
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">1️⃣ Pendapatan</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <input id="incomeSuami" type="number" placeholder="Pendapatan Suami" class="p-2 border rounded">
+        <input id="incomeIstri" type="number" placeholder="Pendapatan Istri" class="p-2 border rounded">
+      </div>
+      <button onclick="saveIncome()" class="mt-3 bg-green-600 text-white px-4 py-2 rounded">Simpan Pendapatan</button>
+    </section>
+
+    <!-- Input Anggaran -->
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">2️⃣ Rencana Anggaran</h2>
+      <div class="grid grid-cols-3 gap-2 mb-2">
+        <input id="category" type="text" placeholder="Kategori (ex: Makanan)" class="p-2 border rounded">
+        <input id="budget" type="number" placeholder="Anggaran (Rp)" class="p-2 border rounded">
+        <button onclick="addBudget()" class="bg-blue-600 text-white rounded">Tambah</button>
+      </div>
+      <ul id="budgetList" class="list-disc ml-6"></ul>
+    </section>
+
+    <!-- Input Pengeluaran -->
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">3️⃣ Pengeluaran Aktual</h2>
+      <div class="grid grid-cols-3 gap-2 mb-2">
+        <input id="expenseCategory" type="text" placeholder="Kategori" class="p-2 border rounded">
+        <input id="expenseAmount" type="number" placeholder="Jumlah (Rp)" class="p-2 border rounded">
+        <button onclick="addExpense()" class="bg-red-600 text-white rounded">Tambah</button>
+      </div>
+      <ul id="expenseList" class="list-disc ml-6"></ul>
+    </section>
+
+    <!-- Rekapitulasi -->
+    <section>
+      <h2 class="text-xl font-semibold mb-2">📈 Rekapitulasi</h2>
+      <div id="summary" class="p-3 bg-gray-50 border rounded"></div>
+    </section>
+
+  </div>
+</body>
+</html>
