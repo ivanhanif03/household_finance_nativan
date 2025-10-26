@@ -3,53 +3,202 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manajemen Keuangan Rumah Tangga</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script defer src="script.js"></script>
+  <title>Household Finance Nativan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f4f7fc;
+    }
+    .card {
+      border-radius: 15px;
+    }
+    .btn-primary {
+      background-color: #2563eb;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+    #notif {
+      display: none;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="container py-4">
+  <h2 class="text-center mb-4 fw-bold text-primary">💰 Household Finance Nativan</h2>
 
-  <div class="max-w-3xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-6">
-    <h1 class="text-2xl font-bold text-center mb-6">📊 Keuangan Rumah Tangga</h1>
+  <!-- Notifikasi -->
+  <div id="notif" class="alert alert-danger text-center fw-semibold" role="alert"></div>
 
-    <!-- Input Pendapatan -->
-    <section class="mb-6">
-      <h2 class="text-xl font-semibold mb-2">1️⃣ Pendapatan</h2>
-      <div class="grid grid-cols-2 gap-4">
-        <input id="incomeSuami" type="number" placeholder="Pendapatan Suami" class="p-2 border rounded">
-        <input id="incomeIstri" type="number" placeholder="Pendapatan Istri" class="p-2 border rounded">
-      </div>
-      <button onclick="saveIncome()" class="mt-3 bg-green-600 text-white px-4 py-2 rounded">Simpan Pendapatan</button>
-    </section>
-
-    <!-- Input Anggaran -->
-    <section class="mb-6">
-      <h2 class="text-xl font-semibold mb-2">2️⃣ Rencana Anggaran</h2>
-      <div class="grid grid-cols-3 gap-2 mb-2">
-        <input id="category" type="text" placeholder="Kategori (ex: Makanan)" class="p-2 border rounded">
-        <input id="budget" type="number" placeholder="Anggaran (Rp)" class="p-2 border rounded">
-        <button onclick="addBudget()" class="bg-blue-600 text-white rounded">Tambah</button>
-      </div>
-      <ul id="budgetList" class="list-disc ml-6"></ul>
-    </section>
-
-    <!-- Input Pengeluaran -->
-    <section class="mb-6">
-      <h2 class="text-xl font-semibold mb-2">3️⃣ Pengeluaran Aktual</h2>
-      <div class="grid grid-cols-3 gap-2 mb-2">
-        <input id="expenseCategory" type="text" placeholder="Kategori" class="p-2 border rounded">
-        <input id="expenseAmount" type="number" placeholder="Jumlah (Rp)" class="p-2 border rounded">
-        <button onclick="addExpense()" class="bg-red-600 text-white rounded">Tambah</button>
-      </div>
-      <ul id="expenseList" class="list-disc ml-6"></ul>
-    </section>
-
-    <!-- Rekapitulasi -->
-    <section>
-      <h2 class="text-xl font-semibold mb-2">📈 Rekapitulasi</h2>
-      <div id="summary" class="p-3 bg-gray-50 border rounded"></div>
-    </section>
-
+  <!-- Anggaran Bulanan -->
+  <div class="card p-4 mb-4 shadow-sm">
+    <h5>🎯 Anggaran Bulanan</h5>
+    <div class="input-group mt-2 mb-2">
+      <span class="input-group-text">Rp</span>
+      <input type="number" id="anggaran" class="form-control" placeholder="Masukkan anggaran pengeluaran bulan ini">
+      <button class="btn btn-outline-primary" id="simpanAnggaran">Simpan</button>
+    </div>
   </div>
+
+  <!-- Form Input -->
+  <div class="card p-4 mb-4 shadow-sm">
+    <h5>➕ Tambah Transaksi</h5>
+    <form id="formTransaksi">
+      <div class="row g-2 mb-2">
+        <div class="col-md-3">
+          <select class="form-select" id="jenis" required>
+            <option value="">Pilih Jenis</option>
+            <option value="Pendapatan">Pendapatan</option>
+            <option value="Pengeluaran">Pengeluaran</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <input type="text" class="form-control" id="kategori" placeholder="Kategori" required>
+        </div>
+        <div class="col-md-2">
+          <input type="number" class="form-control" id="jumlah" placeholder="Jumlah (Rp)" required>
+        </div>
+        <div class="col-md-2">
+          <select class="form-select" id="sumber" required>
+            <option value="Cash">Cash</option>
+            <option value="M-Banking">M-Banking</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <input type="text" class="form-control" id="catatan" placeholder="Catatan">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-2">💾 Simpan</button>
+    </form>
+  </div>
+
+  <!-- Filter -->
+  <div class="card p-4 mb-4 shadow-sm">
+    <h5>🔍 Filter Transaksi</h5>
+    <div class="row g-2 mb-3">
+      <div class="col-md-4">
+        <input type="date" id="filterTanggal" class="form-control">
+      </div>
+      <div class="col-md-4">
+        <input type="text" id="filterKategori" class="form-control" placeholder="Cari kategori...">
+      </div>
+      <div class="col-md-4">
+        <button class="btn btn-outline-secondary w-100" id="btnFilter">Terapkan Filter</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabel Data -->
+  <div class="card p-4 shadow-sm mb-5">
+    <h5>📊 Riwayat Transaksi</h5>
+    <table class="table table-striped mt-3" id="tabelData">
+      <thead>
+        <tr>
+          <th>Tanggal</th>
+          <th>Jenis</th>
+          <th>Kategori</th>
+          <th>Jumlah (Rp)</th>
+          <th>Sumber</th>
+          <th>Catatan</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyqr9c5SKoB5MRckzH8-d62Zs6JQohXU1N5RbVFDlJxRBYbPtiPZtCuK5pEClCqJMKk/exec"; // ganti dengan URL Google Apps Script kamu
+    const notif = document.getElementById("notif");
+    let semuaData = [];
+    let anggaranBulanan = localStorage.getItem("anggaran") ? Number(localStorage.getItem("anggaran")) : 0;
+
+    // --- Load Data ---
+    async function loadData() {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      semuaData = data;
+      tampilkanData(data);
+      cekAnggaran();
+    }
+
+    // --- Tampilkan Data di Tabel ---
+    function tampilkanData(data) {
+      const tbody = document.querySelector("#tabelData tbody");
+      tbody.innerHTML = "";
+      data.reverse().forEach(d => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${d.Tanggal}</td>
+          <td>${d.Jenis}</td>
+          <td>${d.Kategori}</td>
+          <td>Rp ${Number(d.Jumlah).toLocaleString("id-ID")}</td>
+          <td>${d.Sumber}</td>
+          <td>${d.Catatan || ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // --- Simpan Transaksi ---
+    document.getElementById("formTransaksi").addEventListener("submit", async e => {
+      e.preventDefault();
+      const data = {
+        jenis: jenis.value,
+        kategori: kategori.value,
+        jumlah: jumlah.value,
+        sumber: sumber.value,
+        catatan: catatan.value
+      };
+      await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      e.target.reset();
+      await loadData();
+      alert("✅ Data berhasil disimpan!");
+    });
+
+    // --- Filter ---
+    document.getElementById("btnFilter").addEventListener("click", () => {
+      const tgl = document.getElementById("filterTanggal").value;
+      const kat = document.getElementById("filterKategori").value.toLowerCase();
+      const filtered = semuaData.filter(d =>
+        (!tgl || d.Tanggal === tgl) &&
+        (!kat || d.Kategori.toLowerCase().includes(kat))
+      );
+      tampilkanData(filtered);
+    });
+
+    // --- Simpan Anggaran ---
+    document.getElementById("simpanAnggaran").addEventListener("click", () => {
+      const val = Number(document.getElementById("anggaran").value);
+      if (val > 0) {
+        anggaranBulanan = val;
+        localStorage.setItem("anggaran", val);
+        alert("💾 Anggaran disimpan!");
+        cekAnggaran();
+      }
+    });
+
+    // --- Cek Pengeluaran vs Anggaran ---
+    function cekAnggaran() {
+      if (!anggaranBulanan) return;
+      const bulanSekarang = new Date().toISOString().slice(0, 7); // contoh: 2025-10
+      const totalPengeluaran = semuaData
+        .filter(d => d.Jenis === "Pengeluaran" && d.Tanggal.startsWith(bulanSekarang))
+        .reduce((sum, d) => sum + Number(d.Jumlah || 0), 0);
+
+      if (totalPengeluaran > anggaranBulanan) {
+        notif.innerText = `⚠️ Pengeluaran bulan ini (${totalPengeluaran.toLocaleString("id-ID")}) melebihi anggaran (${anggaranBulanan.toLocaleString("id-ID")})`;
+        notif.style.display = "block";
+      } else {
+        notif.style.display = "none";
+      }
+    }
+
+    // --- Auto Refresh tiap 15 detik ---
+    loadData();
+    setInterval(loadData, 15000);
+  </script>
 </body>
 </html>
