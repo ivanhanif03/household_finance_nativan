@@ -2,159 +2,374 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Keuangan Rumah Tangga</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Keuangan Rumah Tangga Nativan</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#7b2cbf" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(180deg, #f9faf8 0%, #e5f2e9 100%);
-      color: #333;
-      padding: 20px;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(145deg, #e3d8ff, #cab6ff, #b388eb);
+      color: #fff;
+      min-height: 100vh;
+      padding-bottom: 100px;
     }
-    .card {
-      border-radius: 20px;
-      border: none;
-      background: #ffffffcc;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      backdrop-filter: blur(6px);
+
+    .container { max-width: 700px; padding: 0 15px; }
+    .title { font-weight: 700; font-size: clamp(1.3rem, 4vw, 1.8rem); text-align: center; margin: 25px 0 15px 0; color: #fff; }
+
+    .balance {
+      background: #a06cd5; border-radius: 20px; padding: 20px; text-align: center;
+      color: #fff; box-shadow: 0 6px 12px rgba(0,0,0,0.2);
     }
-    .btn-custom {
-      background-color: #9ed5c0;
-      border: none;
-      color: white;
-      font-weight: 600;
-      border-radius: 15px;
-      transition: 0.2s;
+
+    .sub-balances { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+    .sub-balance {
+      background: rgba(255,255,255,0.15); border-radius: 12px; flex: 1; min-width: 30%;
+      padding: 8px; font-size: 0.85rem; text-align: center; color: #fff;
     }
-    .btn-custom:hover {
-      background-color: #84c8ad;
+
+    .summary-card {
+      background: #fff; border-radius: 16px; padding: 15px;
+      text-align: center; color: #222; margin-bottom: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
-    .header {
-      text-align: center;
-      font-size: 1.6rem;
-      font-weight: 600;
-      margin-bottom: 20px;
-      color: #426b59;
+
+    .summary-card h6 { font-size: 0.85rem; color: #666; margin-bottom: 3px; }
+    .summary-card h3 { font-size: 1.1rem; font-weight: 700; margin: 0; color: #3a0ca3; }
+
+    .form-card {
+      background: #fff; color: #333; border-radius: 18px;
+      padding: 18px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    input[type="text"], select {
-      border-radius: 10px;
-      border: 1px solid #cfd9d3;
+
+    .btn-purple {
+      background-color: #7b2cbf; color: #fff; font-weight: 600;
+      border-radius: 10px; width: 100%; transition: all 0.2s;
     }
-    .list-group-item {
-      border: none;
-      border-radius: 12px !important;
-      margin-bottom: 10px;
-      background-color: #ffffff;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    .btn-purple:hover { background-color: #5a189a; transform: scale(1.02); }
+
+    .riwayat-title {
+      font-weight: 600; color: #fff; text-align: center;
+      margin-top: 35px; margin-bottom: 10px; font-size: clamp(1rem, 3vw, 1.3rem);
     }
-    .badge-storage {
-      background-color: #e7f8f0;
-      color: #4a8065;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      padding: 3px 8px;
+
+    .filter-export {
+      display: flex; flex-wrap: wrap; justify-content: space-between;
+      align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 14px;
+      padding: 10px 14px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    #filter {
+      flex: 1; border-radius: 12px; border: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 8px 14px; font-size: 0.9rem;
+    }
+    #filter:focus { outline: none; box-shadow: 0 0 0 2px #b388eb; }
+
+    .btn-export {
+      background: linear-gradient(90deg, #9b5de5, #7b2cbf);
+      color: white; font-weight: 500; border: none;
+      padding: 8px 14px; border-radius: 10px; transition: 0.2s;
+    }
+    .btn-export:hover { opacity: 0.9; transform: scale(1.03); }
+
+    /* 🔍 Filter tanggal satu baris */
+    .tanggal-filter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 12px;
+  }
+
+  .tanggal-filter input[type="date"] {
+    border-radius: 10px;
+    border: none;
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    min-width: 130px;
+  }
+
+  .tanggal-filter button {
+    border-radius: 10px;
+    background-color: #fff;
+    color: #5a189a;
+    border: none;
+    padding: 6px 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: 0.2s;
+  }
+
+  .tanggal-filter button:hover {
+    transform: scale(1.05);
+    background-color: #f8f0ff;
+  }
+
+    #notif { color: #4CAF50; font-size: 0.9rem; text-align: center; }
+
+    /* 🧾 Kartu Riwayat */
+    .riwayat-container { margin-top: 20px; }
+    .trx-card {
+      background: #fff; color: #333; border-radius: 14px;
+      padding: 10px 14px; margin-bottom: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      display: flex; flex-direction: column; gap: 4px;
+      transition: transform 0.2s ease;
+    }
+    .trx-card:hover { transform: translateY(-2px); }
+
+    .trx-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px dashed #eee;
+      padding-bottom: 3px;
+    }
+    .trx-header h6 {
+      margin: 0; font-weight: 600; color: #3a0ca3;
+      font-size: 0.9rem; text-transform: uppercase;
+    }
+    .trx-date { font-size: 0.75rem; color: #777; }
+
+    .trx-detail {
+      font-size: 0.83rem;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 2px;
+    }
+    .trx-nominal { font-weight: 700; }
+
+    .trx-nominal.pendapatan { color: #009d63; }
+    .trx-nominal.pengeluaran { color: #e63946; }
+
+    .trx-deskripsi {
+      color: #555;
+      font-size: 0.8rem;
+      font-style: italic;
+    }
+
+    @media (max-width: 500px) {
+      .filter-export { flex-direction: column; align-items: stretch; }
+      .btn-export { width: 100%; }
+      .tanggal-filter { flex-direction: column; }
+      .trx-header { flex-direction: column; align-items: flex-start; gap: 2px; }
     }
   </style>
 </head>
 <body>
-  <div class="container mt-3">
-    <div class="header">💰 Keuangan Rumah Tangga</div>
+  <div class="container">
+    <div class="title">💰 Keuangan Rumah Tangga Nativan</div>
 
-    <div class="card p-4">
-      <form id="formTransaksi">
-        <div class="mb-3">
-          <label class="form-label">Jenis Transaksi</label>
-          <select class="form-select" id="jenis" required>
-            <option value="">Pilih Jenis</option>
-            <option value="Pendapatan">Pendapatan</option>
-            <option value="Pengeluaran">Pengeluaran</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Penyimpanan</label>
-          <select class="form-select" id="penyimpanan" required>
-            <option value="">Pilih Penyimpanan</option>
-            <option value="Cash">Cash</option>
-            <option value="M-Banking">M-Banking</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Keterangan</label>
-          <input type="text" class="form-control" id="keterangan" placeholder="Misal: Gaji, Belanja bulanan..." required>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Nominal (Rp)</label>
-          <input type="text" class="form-control" id="nominal" placeholder="1.000.000" required>
-        </div>
-
-        <button type="submit" class="btn btn-custom w-100">💾 Simpan Transaksi</button>
-      </form>
+    <div class="balance mb-3">
+      <h5>Saldo Total</h5>
+      <h2 id="saldo">Rp 0</h2>
+      <div class="sub-balances">
+        <div class="sub-balance">Cash<br><span id="saldoCash">Rp 0</span></div>
+        <div class="sub-balance">M-Banking<br><span id="saldoBank">Rp 0</span></div>
+        <div class="sub-balance">E-Wallet<br><span id="saldoWallet">Rp 0</span></div>
+      </div>
     </div>
 
-    <div class="mt-4">
-      <h5 class="mb-3 text-center">📋 Riwayat Transaksi</h5>
-      <ul class="list-group" id="riwayat"></ul>
+    <div class="row text-center mb-3">
+      <div class="col-6">
+        <div class="summary-card"><h6>Pendapatan</h6><h3 id="totalPendapatan">Rp 0</h3></div>
+      </div>
+      <div class="col-6">
+        <div class="summary-card"><h6>Pengeluaran</h6><h3 id="totalPengeluaran">Rp 0</h3></div>
+      </div>
     </div>
+
+    <div class="form-card">
+      <h5 class="fw-bold mb-3 text-center" style="color:#5a189a;">Tambah Transaksi</h5>
+      <div class="mb-3"><label class="form-label">Jenis</label>
+        <select id="jenis" class="form-select">
+          <option value="Pendapatan">Pendapatan</option>
+          <option value="Pengeluaran">Pengeluaran</option>
+        </select>
+      </div>
+      <div class="mb-3"><label class="form-label">Kategori</label><input type="text" id="kategori" class="form-control" placeholder="Contoh: Gaji, Makan, Transport" /></div>
+      <div class="mb-3"><label class="form-label">Nominal</label><input type="text" id="nominal" class="form-control" placeholder="Contoh: 1.500.000" /></div>
+      <div class="mb-3"><label class="form-label">Deskripsi</label><input type="text" id="deskripsi" class="form-control" placeholder="Keterangan tambahan" /></div>
+      <div class="mb-3"><label class="form-label">Dompet</label>
+        <select id="dompet" class="form-select">
+          <option value="Cash">Cash</option>
+          <option value="M-Banking">M-Banking</option>
+          <option value="E-Wallet">E-Wallet</option>
+        </select>
+      </div>
+      <button class="btn btn-purple" onclick="simpanTransaksi()">💾 Simpan</button>
+      <div id="notif" class="mt-3 fw-semibold"></div>
+    </div>
+
+    <div class="riwayat-title">📜 Riwayat Transaksi</div>
+
+    <div class="filter-export">
+      <input type="text" id="filter" placeholder="🔍 Cari transaksi..." onkeyup="filterTable()" />
+      <button class="btn-export" onclick="exportExcel()">📤 Export</button>
+    </div>
+
+    <!-- 🔍 Filter tanggal satu baris -->
+    <div class="tanggal-filter flex-wrap flex-md-nowrap">
+  <div class="d-flex w-100 gap-2 justify-content-center">
+    <input type="date" id="startDate" class="flex-fill" />
+    <input type="date" id="endDate" class="flex-fill" />
+    <button onclick="filterTanggal()">🔍</button>
+  </div>
+</div>
+
+    <div class="riwayat-container" id="riwayatContainer"></div>
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbytosXT2KN-QYFUlqZ11w7W_jC4xHtXm1NWiQZdRIjsOOOz5jJVvINRoZ_EFIkaAiO5/exec"; // Ganti dengan URL Web App kamu
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysX6FqTkoj_KJEa9lhhpKfLWKGI_9h4JslangxFV7K9291ArOOJydUz2jDu4DP0vHA/exec";
+    let semuaData = [];
 
-    // Format angka pakai titik
-    document.getElementById('nominal').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\./g, '');
-      e.target.value = new Intl.NumberFormat('id-ID').format(value);
+    const formatRupiah = angka => "Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    const formatTanggal = t => {
+      const d = new Date(t);
+      if (isNaN(d)) return "-";
+      return `${d.getDate().toString().padStart(2,"0")}/${(d.getMonth()+1).toString().padStart(2,"0")}/${d.getFullYear()} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
+    };
+
+    document.getElementById("nominal").addEventListener("input", e => {
+      e.target.value = e.target.value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     });
 
-    document.getElementById('formTransaksi').addEventListener('submit', async (e) => {
-      e.preventDefault();
+    function capitalizeFirst(str){return str?str.charAt(0).toUpperCase()+str.slice(1).toLowerCase():"";}
 
-      const jenis = document.getElementById('jenis').value;
-      const penyimpanan = document.getElementById('penyimpanan').value;
-      const keterangan = document.getElementById('keterangan').value;
-      const nominal = document.getElementById('nominal').value.replace(/\./g, '');
-
-      const data = { jenis, penyimpanan, keterangan, nominal };
-
-      try {
-        const res = await fetch(scriptURL, {
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const result = await res.json();
-
-        if (result.result === "success") {
-          alert("✅ Transaksi berhasil disimpan!");
-          tambahRiwayat(jenis, penyimpanan, keterangan, nominal);
-          e.target.reset();
-        } else {
-          alert("❌ Gagal menyimpan transaksi");
-        }
-      } catch (err) {
-        alert("⚠️ Terjadi kesalahan jaringan");
-      }
-    });
-
-    function tambahRiwayat(jenis, penyimpanan, ket, nominal) {
-      const li = document.createElement('li');
-      li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
-      li.innerHTML = `
-        <div>
-          <strong>${jenis === 'Pendapatan' ? '💵' : '🛒'} ${ket}</strong><br>
-          <span class="badge-storage">${penyimpanan}</span>
-        </div>
-        <span class="${jenis === 'Pendapatan' ? 'text-success' : 'text-danger'} fw-semibold">
-          Rp ${new Intl.NumberFormat('id-ID').format(nominal)}
-        </span>
-      `;
-      document.getElementById('riwayat').prepend(li);
+    function showNotif(msg) {
+      const n = document.getElementById("notif");
+      n.innerText = msg;
+      setTimeout(() => n.innerText = "", 3000);
     }
+
+    const jenisEl = document.getElementById("jenis");
+    const kategoriEl = document.getElementById("kategori");
+    const nominalEl = document.getElementById("nominal");
+    const deskripsiEl = document.getElementById("deskripsi");
+    const dompetEl = document.getElementById("dompet");
+
+    function simpanTransaksi() {
+      const jenis = jenisEl.value,
+            kategori = kategoriEl.value,
+            nominal = nominalEl.value.replace(/\./g, ""),
+            deskripsi = deskripsiEl.value,
+            dompet = dompetEl.value;
+
+      if (!kategori || !nominal) return alert("Lengkapi kategori dan nominal!");
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jenis, kategori, nominal, deskripsi, dompet }),
+      }).then(() => {
+        showNotif("✅ Transaksi disimpan!");
+        loadData();
+        kategoriEl.value = nominalEl.value = deskripsiEl.value = "";
+
+        // 🔔 Panggil notifikasi browser
+        if (Notification.permission === "granted") {
+          new Notification("✅ Transaksi baru disimpan!", {
+            body: `${jenis} ${kategori} sebesar ${formatRupiah(nominal)}`,
+            icon: "https://cdn-icons-png.flaticon.com/512/1170/1170678.png",
+          });
+        } else if (Notification.permission !== "denied") {
+          Notification.requestPermission();
+        }
+      });
+    }
+
+    function loadData() {
+      fetch(SCRIPT_URL).then(res => res.json()).then(data => {
+        semuaData = data;
+        renderDashboard();
+        renderRiwayat(filter3HariTerakhir(data));
+      });
+    }
+
+    function filter3HariTerakhir(data) {
+      const now = new Date();
+      const tigaHariLalu = new Date(now);
+      tigaHariLalu.setDate(now.getDate() - 3);
+      return data.filter(t => new Date(t.tanggal) >= tigaHariLalu);
+    }
+
+    function filterTanggal() {
+      const s = document.getElementById("startDate").value;
+      const e = document.getElementById("endDate").value;
+      if (!s || !e) return alert("Pilih tanggal awal dan akhir!");
+      const start = new Date(s), end = new Date(e);
+      const filtered = semuaData.filter(t => {
+        const td = new Date(t.tanggal);
+        return td >= start && td <= end;
+      });
+      renderRiwayat(filtered);
+    }
+
+    function renderDashboard() {
+      let pendapatan=0,pengeluaran=0,cash=0,bank=0,wallet=0;
+      semuaData.forEach(trx=>{
+        const n=parseInt(trx.nominal);
+        if(trx.jenis==="Pendapatan"){pendapatan+=n;if(trx.dompet==="Cash")cash+=n;else if(trx.dompet==="M-Banking")bank+=n;else wallet+=n;}
+        else{pengeluaran+=n;if(trx.dompet==="Cash")cash-=n;else if(trx.dompet==="M-Banking")bank-=n;else wallet-=n;}
+      });
+      document.getElementById("totalPendapatan").innerText=formatRupiah(pendapatan);
+      document.getElementById("totalPengeluaran").innerText=formatRupiah(pengeluaran);
+      document.getElementById("saldo").innerText=formatRupiah(pendapatan-pengeluaran);
+      document.getElementById("saldoCash").innerText=formatRupiah(cash);
+      document.getElementById("saldoBank").innerText=formatRupiah(bank);
+      document.getElementById("saldoWallet").innerText=formatRupiah(wallet);
+    }
+
+    function renderRiwayat(data) {
+      const container = document.getElementById("riwayatContainer");
+      container.innerHTML = "";
+      if (data.length === 0) {
+        container.innerHTML = "<p class='text-center mt-3'>Tidak ada transaksi.</p>";
+        return;
+      }
+      data.slice().reverse().forEach(trx => {
+        container.innerHTML += `
+          <div class="trx-card">
+            <div class="trx-header">
+              <h6>${trx.kategori.toUpperCase()}</h6>
+              <span class="trx-date">${formatTanggal(trx.tanggal)}</span>
+            </div>
+            <div class="trx-detail">
+              <span>${trx.jenis} • ${trx.dompet}</span>
+              <span class="trx-nominal ${trx.jenis.toLowerCase()}">${formatRupiah(trx.nominal)}</span>
+            </div>
+            <small class="trx-deskripsi">${capitalizeFirst(trx.deskripsi || "-")}</small>
+          </div>`;
+      });
+    }
+
+    function filterTable() {
+      const keyword = document.getElementById("filter").value.toLowerCase();
+      const filtered = semuaData.filter(t => (t.kategori + t.dompet + t.jenis + t.deskripsi).toLowerCase().includes(keyword));
+      renderRiwayat(filtered);
+    }
+
+    function exportExcel() {
+      const csv = ["Tanggal,Jenis,Kategori,Dompet,Nominal,Deskripsi"];
+      semuaData.forEach(t => csv.push(`${t.tanggal},${t.jenis},${t.kategori},${t.dompet},${t.nominal},${t.deskripsi}`));
+      const blob = new Blob([csv.join("\n")], {type:"text/csv"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "Riwayat_Keuangan.csv";
+      a.click();
+    }
+
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+
+    loadData();
+    setInterval(loadData, 15000);
   </script>
 </body>
 </html>
