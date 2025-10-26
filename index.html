@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Keuangan Rumah Tangga Nativan</title>
 
+  <meta name="color-scheme" content="light dark" />
+  
+  <link rel="icon" href="assets/icons/icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-512.png" />
+  <meta name="apple-mobile-web-app-status-bar" content="#7b2cbf" />
+
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#7b2cbf" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -225,7 +231,7 @@
     <div class="riwayat-container" id="riwayatContainer"></div>
   </div>
 
-  <script>
+   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysX6FqTkoj_KJEa9lhhpKfLWKGI_9h4JslangxFV7K9291ArOOJydUz2jDu4DP0vHA/exec";
     let semuaData = [];
 
@@ -273,7 +279,7 @@
         loadData();
         kategoriEl.value = nominalEl.value = deskripsiEl.value = "";
 
-        // 🔔 Panggil notifikasi browser
+        // 🔔 Notifikasi browser
         if (Notification.permission === "granted") {
           new Notification("✅ Transaksi baru disimpan!", {
             body: `${jenis} ${kategori} sebesar ${formatRupiah(nominal)}`,
@@ -286,11 +292,13 @@
     }
 
     function loadData() {
-      fetch(SCRIPT_URL).then(res => res.json()).then(data => {
-        semuaData = data;
-        renderDashboard();
-        renderRiwayat(filter3HariTerakhir(data));
-      });
+      fetch(SCRIPT_URL)
+        .then(res => res.json())
+        .then(data => {
+          semuaData = data;
+          renderDashboard();
+          renderRiwayat(filter3HariTerakhir(data));
+        });
     }
 
     function filter3HariTerakhir(data) {
@@ -356,20 +364,35 @@
       renderRiwayat(filtered);
     }
 
-    function exportExcel() {
-      const csv = ["Tanggal,Jenis,Kategori,Dompet,Nominal,Deskripsi"];
-      semuaData.forEach(t => csv.push(`${t.tanggal},${t.jenis},${t.kategori},${t.dompet},${t.nominal},${t.deskripsi}`));
-      const blob = new Blob([csv.join("\n")], {type:"text/csv"});
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "Riwayat_Keuangan.csv";
-      a.click();
-    }
+    // ✅ Perbaikan format tanggal & angka di export Excel
+   function exportExcel() {
+  const csv = ["Tanggal,Jenis,Kategori,Dompet,Nominal (Rp),Deskripsi"];
+  
+  semuaData.forEach(t => {
+    // Gunakan waktu apa adanya (tanpa +7 jam)
+    const d = new Date(t.tanggal);
+    const tanggal = `${d.getDate().toString().padStart(2,"0")}/${(d.getMonth()+1).toString().padStart(2,"0")}/${d.getFullYear()} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
+    
+    // Format nominal dan deskripsi
+    const nominal = t.nominal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    const deskripsi = `"${(t.deskripsi || "").replace(/"/g, '""')}"`;
+
+    csv.push(`${tanggal},${t.jenis},${t.kategori},${t.dompet},${nominal},${deskripsi}`);
+  });
+
+  const blob = new Blob([csv.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `Riwayat_Keuangan_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
 
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 
     loadData();
     setInterval(loadData, 15000);
   </script>
+
 </body>
 </html>
