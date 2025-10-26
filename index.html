@@ -1,93 +1,90 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Household Finance Nativan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      background-color: #f4f7fc;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #f0f6ff 0%, #ffffff 100%);
+      color: #1e293b;
     }
     .navbar {
       background-color: #2563eb;
     }
     .navbar-brand {
-      color: white;
+      color: white !important;
       font-weight: 600;
-    }
-    .card {
-      border-radius: 15px;
-      border: none;
     }
     .summary-card {
       border-radius: 15px;
-      color: white;
       padding: 20px;
+      color: white;
       text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-    .bg-income { background-color: #22c55e; }
-    .bg-expense { background-color: #ef4444; }
-    .bg-balance { background-color: #3b82f6; }
-    .table th, .table td {
-      vertical-align: middle;
+    .bg-income { background: #22c55e; }
+    .bg-expense { background: #ef4444; }
+    .bg-balance { background: #3b82f6; }
+    input, select {
+      font-family: 'Poppins', sans-serif;
     }
-    #notif {
-      display: none;
+    .table th {
+      background-color: #dbeafe;
     }
-    @media (max-width: 768px) {
-      h2, h5 { font-size: 1.1rem; }
-      .summary-card h3 { font-size: 1.3rem; }
-      .summary-card p { font-size: 0.9rem; }
+    .btn-primary {
+      background-color: #2563eb;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #1e40af;
     }
   </style>
 </head>
 <body class="pb-5">
-  <!-- Navbar -->
   <nav class="navbar mb-4">
     <div class="container-fluid justify-content-center">
-      <span class="navbar-brand">💰 Household Finance Nativan</span>
+      <span class="navbar-brand fs-5">💰 Household Finance Nativan</span>
     </div>
   </nav>
 
   <div class="container">
-    <!-- Notifikasi -->
-    <div id="notif" class="alert alert-danger text-center fw-semibold" role="alert"></div>
-
     <!-- Dashboard -->
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4 text-center">
       <div class="col-12 col-md-4">
         <div class="summary-card bg-income">
           <p>Pendapatan Bulan Ini</p>
-          <h3 id="totalPendapatan">Rp 0</h3>
+          <h4 id="totalPendapatan">Rp 0</h4>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="summary-card bg-expense">
           <p>Pengeluaran Bulan Ini</p>
-          <h3 id="totalPengeluaran">Rp 0</h3>
+          <h4 id="totalPengeluaran">Rp 0</h4>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="summary-card bg-balance">
           <p>Saldo Bulan Ini</p>
-          <h3 id="saldoBulan">Rp 0</h3>
+          <h4 id="saldoBulan">Rp 0</h4>
         </div>
       </div>
     </div>
 
-    <!-- Anggaran Bulanan -->
+    <!-- Grafik -->
     <div class="card p-4 mb-4 shadow-sm">
-      <h5>🎯 Anggaran Bulanan</h5>
-      <div class="input-group mt-2 mb-2">
-        <span class="input-group-text">Rp</span>
-        <input type="number" id="anggaran" class="form-control" placeholder="Masukkan anggaran pengeluaran bulan ini">
-        <button class="btn btn-outline-primary" id="simpanAnggaran">Simpan</button>
+      <h5>📊 Grafik Keuangan Bulanan</h5>
+      <div class="row">
+        <div class="col-12 col-md-6 mb-3"><canvas id="chartPie"></canvas></div>
+        <div class="col-12 col-md-6"><canvas id="chartBar"></canvas></div>
       </div>
     </div>
 
-    <!-- Form Input -->
+    <!-- Input Transaksi -->
     <div class="card p-4 mb-4 shadow-sm">
       <h5>➕ Tambah Transaksi</h5>
       <form id="formTransaksi">
@@ -102,20 +99,18 @@
           <div class="col-6 col-md-3">
             <input type="text" class="form-control" id="kategori" placeholder="Kategori" required>
           </div>
-          <div class="col-6 col-md-2">
-            <input type="number" class="form-control" id="jumlah" placeholder="Rp" required>
+          <div class="col-6 col-md-3">
+            <input type="text" class="form-control" id="jumlah" placeholder="Jumlah (Rp)" required>
           </div>
-          <div class="col-6 col-md-2">
+          <div class="col-6 col-md-3">
             <select class="form-select" id="sumber" required>
               <option value="Cash">Cash</option>
               <option value="M-Banking">M-Banking</option>
             </select>
           </div>
-          <div class="col-12 col-md-2">
-            <input type="text" class="form-control" id="catatan" placeholder="Catatan">
-          </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-2 w-100">💾 Simpan Transaksi</button>
+        <input type="text" class="form-control mb-2" id="catatan" placeholder="Catatan (opsional)">
+        <button type="submit" class="btn btn-primary w-100">💾 Simpan Transaksi</button>
       </form>
     </div>
 
@@ -123,15 +118,9 @@
     <div class="card p-4 mb-4 shadow-sm">
       <h5>🔍 Filter Transaksi</h5>
       <div class="row g-2 mb-3">
-        <div class="col-6 col-md-4">
-          <input type="date" id="filterTanggal" class="form-control">
-        </div>
-        <div class="col-6 col-md-4">
-          <input type="text" id="filterKategori" class="form-control" placeholder="Cari kategori...">
-        </div>
-        <div class="col-12 col-md-4">
-          <button class="btn btn-outline-secondary w-100" id="btnFilter">Terapkan Filter</button>
-        </div>
+        <div class="col-6 col-md-4"><input type="date" id="filterTanggal" class="form-control"></div>
+        <div class="col-6 col-md-4"><input type="text" id="filterKategori" class="form-control" placeholder="Cari kategori..."></div>
+        <div class="col-12 col-md-4"><button class="btn btn-outline-secondary w-100" id="btnFilter">Terapkan Filter</button></div>
       </div>
     </div>
 
@@ -140,7 +129,7 @@
       <h5>📋 Riwayat Transaksi</h5>
       <div class="table-responsive">
         <table class="table table-striped mt-3" id="tabelData">
-          <thead class="table-primary">
+          <thead>
             <tr>
               <th>Tanggal</th>
               <th>Jenis</th>
@@ -157,10 +146,8 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyqr9c5SKoB5MRckzH8-d62Zs6JQohXU1N5RbVFDlJxRBYbPtiPZtCuK5pEClCqJMKk/exec"; // Ganti dengan URL kamu
-    const notif = document.getElementById("notif");
-    let semuaData = [];
-    let anggaranBulanan = localStorage.getItem("anggaran") ? Number(localStorage.getItem("anggaran")) : 0;
+    const API_URL = "https://script.google.com/macros/s/AKfycbzbHXJOd6Fk9p9lgMM_HAUuNKKbhTBJ1c12nPM9JOoCf7IuCwxFIGIqgTtTIwZYQU1S/exec";
+    let semuaData = [], chartPie, chartBar;
 
     async function loadData() {
       const res = await fetch(API_URL);
@@ -168,13 +155,13 @@
       semuaData = data;
       tampilkanData(data);
       updateDashboard();
-      cekAnggaran();
+      updateCharts();
     }
 
     function tampilkanData(data) {
       const tbody = document.querySelector("#tabelData tbody");
       tbody.innerHTML = "";
-      data.reverse().forEach(d => {
+      data.slice().reverse().forEach(d => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${d.Tanggal}</td>
@@ -188,15 +175,10 @@
       });
     }
 
-    // Dashboard summary
     function updateDashboard() {
       const bulan = new Date().toISOString().slice(0,7);
-      const pendapatan = semuaData
-        .filter(d => d.Jenis === "Pendapatan" && d.Tanggal.startsWith(bulan))
-        .reduce((sum,d) => sum + Number(d.Jumlah||0), 0);
-      const pengeluaran = semuaData
-        .filter(d => d.Jenis === "Pengeluaran" && d.Tanggal.startsWith(bulan))
-        .reduce((sum,d) => sum + Number(d.Jumlah||0), 0);
+      const pendapatan = semuaData.filter(d => d.Jenis === "Pendapatan" && d.Tanggal.startsWith(bulan)).reduce((s,d)=>s+Number(d.Jumlah||0),0);
+      const pengeluaran = semuaData.filter(d => d.Jenis === "Pengeluaran" && d.Tanggal.startsWith(bulan)).reduce((s,d)=>s+Number(d.Jumlah||0),0);
       const saldo = pendapatan - pengeluaran;
 
       document.getElementById("totalPendapatan").innerText = "Rp " + pendapatan.toLocaleString("id-ID");
@@ -204,62 +186,64 @@
       document.getElementById("saldoBulan").innerText = "Rp " + saldo.toLocaleString("id-ID");
     }
 
-    // Cek anggaran
-    function cekAnggaran() {
-      if (!anggaranBulanan) return;
+    // Grafik
+    function updateCharts() {
       const bulan = new Date().toISOString().slice(0,7);
-      const total = semuaData
-        .filter(d => d.Jenis === "Pengeluaran" && d.Tanggal.startsWith(bulan))
-        .reduce((sum,d) => sum + Number(d.Jumlah||0), 0);
-      if (total > anggaranBulanan) {
-        notif.innerText = `⚠️ Pengeluaran bulan ini (${total.toLocaleString("id-ID")}) melebihi anggaran (${anggaranBulanan.toLocaleString("id-ID")})`;
-        notif.style.display = "block";
-      } else {
-        notif.style.display = "none";
-      }
+      const pendapatan = semuaData.filter(d => d.Jenis === "Pendapatan" && d.Tanggal.startsWith(bulan)).reduce((s,d)=>s+Number(d.Jumlah||0),0);
+      const pengeluaran = semuaData.filter(d => d.Jenis === "Pengeluaran" && d.Tanggal.startsWith(bulan)).reduce((s,d)=>s+Number(d.Jumlah||0),0);
+      const kategoriData = {};
+      semuaData.filter(d => d.Jenis === "Pengeluaran" && d.Tanggal.startsWith(bulan))
+        .forEach(d => { kategoriData[d.Kategori] = (kategoriData[d.Kategori]||0)+Number(d.Jumlah||0); });
+
+      if (chartPie) chartPie.destroy();
+      chartPie = new Chart(document.getElementById('chartPie'), {
+        type: 'pie',
+        data: { labels: ['Pendapatan','Pengeluaran'], datasets: [{ data:[pendapatan,pengeluaran], backgroundColor:['#22c55e','#ef4444'] }] }
+      });
+
+      if (chartBar) chartBar.destroy();
+      chartBar = new Chart(document.getElementById('chartBar'), {
+        type: 'bar',
+        data: { labels:Object.keys(kategoriData), datasets:[{ label:'Pengeluaran per Kategori', data:Object.values(kategoriData), backgroundColor:'#3b82f6' }] },
+        options: { scales:{ y:{ beginAtZero:true } } }
+      });
     }
 
-    // Simpan anggaran
-    document.getElementById("simpanAnggaran").addEventListener("click", () => {
-      const val = Number(document.getElementById("anggaran").value);
-      if (val > 0) {
-        anggaranBulanan = val;
-        localStorage.setItem("anggaran", val);
-        alert("💾 Anggaran disimpan!");
-        cekAnggaran();
-      }
-    });
-
-    // Simpan transaksi
-    document.getElementById("formTransaksi").addEventListener("submit", async e => {
+    // Input transaksi
+    document.getElementById("formTransaksi").addEventListener("submit", async e=>{
       e.preventDefault();
       const data = {
         jenis: jenis.value,
         kategori: kategori.value,
-        jumlah: jumlah.value,
+        jumlah: jumlah.value.replace(/\./g,''), // hapus titik
         sumber: sumber.value,
         catatan: catatan.value
       };
-      await fetch(API_URL, { method: "POST", body: JSON.stringify(data) });
+      await fetch(API_URL,{method:"POST",body:JSON.stringify(data)});
       e.target.reset();
-      await loadData();
-      alert("✅ Data berhasil disimpan!");
+      alert("✅ Data tersimpan!");
+      loadData();
     });
 
-    // Filter data
-    document.getElementById("btnFilter").addEventListener("click", () => {
-      const tgl = document.getElementById("filterTanggal").value;
-      const kat = document.getElementById("filterKategori").value.toLowerCase();
+    // Format angka otomatis
+    document.getElementById("jumlah").addEventListener("input", function(){
+      let v = this.value.replace(/\D/g,"");
+      this.value = v.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    });
+
+    // Filter
+    document.getElementById("btnFilter").addEventListener("click",()=>{
+      const tgl = filterTanggal.value;
+      const kat = filterKategori.value.toLowerCase();
       const filtered = semuaData.filter(d =>
-        (!tgl || d.Tanggal === tgl) &&
+        (!tgl || d.Tanggal.startsWith(tgl)) &&
         (!kat || d.Kategori.toLowerCase().includes(kat))
       );
       tampilkanData(filtered);
     });
 
-    // Auto refresh tiap 15 detik
     loadData();
-    setInterval(loadData, 15000);
+    setInterval(loadData,15000);
   </script>
 </body>
 </html>
