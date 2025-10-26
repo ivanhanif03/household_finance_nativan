@@ -8,120 +8,169 @@
   <style>
     body {
       background-color: #f4f7fc;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .navbar {
+      background-color: #2563eb;
+    }
+    .navbar-brand {
+      color: white;
+      font-weight: 600;
     }
     .card {
       border-radius: 15px;
-    }
-    .btn-primary {
-      background-color: #2563eb;
       border: none;
     }
-    .btn-primary:hover {
-      background-color: #1d4ed8;
+    .summary-card {
+      border-radius: 15px;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .bg-income { background-color: #22c55e; }
+    .bg-expense { background-color: #ef4444; }
+    .bg-balance { background-color: #3b82f6; }
+    .table th, .table td {
+      vertical-align: middle;
     }
     #notif {
       display: none;
     }
+    @media (max-width: 768px) {
+      h2, h5 { font-size: 1.1rem; }
+      .summary-card h3 { font-size: 1.3rem; }
+      .summary-card p { font-size: 0.9rem; }
+    }
   </style>
 </head>
-<body class="container py-4">
-  <h2 class="text-center mb-4 fw-bold text-primary">💰 Household Finance Nativan</h2>
-
-  <!-- Notifikasi -->
-  <div id="notif" class="alert alert-danger text-center fw-semibold" role="alert"></div>
-
-  <!-- Anggaran Bulanan -->
-  <div class="card p-4 mb-4 shadow-sm">
-    <h5>🎯 Anggaran Bulanan</h5>
-    <div class="input-group mt-2 mb-2">
-      <span class="input-group-text">Rp</span>
-      <input type="number" id="anggaran" class="form-control" placeholder="Masukkan anggaran pengeluaran bulan ini">
-      <button class="btn btn-outline-primary" id="simpanAnggaran">Simpan</button>
+<body class="pb-5">
+  <!-- Navbar -->
+  <nav class="navbar mb-4">
+    <div class="container-fluid justify-content-center">
+      <span class="navbar-brand">💰 Household Finance Nativan</span>
     </div>
-  </div>
+  </nav>
 
-  <!-- Form Input -->
-  <div class="card p-4 mb-4 shadow-sm">
-    <h5>➕ Tambah Transaksi</h5>
-    <form id="formTransaksi">
-      <div class="row g-2 mb-2">
-        <div class="col-md-3">
-          <select class="form-select" id="jenis" required>
-            <option value="">Pilih Jenis</option>
-            <option value="Pendapatan">Pendapatan</option>
-            <option value="Pengeluaran">Pengeluaran</option>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <input type="text" class="form-control" id="kategori" placeholder="Kategori" required>
-        </div>
-        <div class="col-md-2">
-          <input type="number" class="form-control" id="jumlah" placeholder="Jumlah (Rp)" required>
-        </div>
-        <div class="col-md-2">
-          <select class="form-select" id="sumber" required>
-            <option value="Cash">Cash</option>
-            <option value="M-Banking">M-Banking</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <input type="text" class="form-control" id="catatan" placeholder="Catatan">
-        </div>
-      </div>
-      <button type="submit" class="btn btn-primary mt-2">💾 Simpan</button>
-    </form>
-  </div>
+  <div class="container">
+    <!-- Notifikasi -->
+    <div id="notif" class="alert alert-danger text-center fw-semibold" role="alert"></div>
 
-  <!-- Filter -->
-  <div class="card p-4 mb-4 shadow-sm">
-    <h5>🔍 Filter Transaksi</h5>
-    <div class="row g-2 mb-3">
-      <div class="col-md-4">
-        <input type="date" id="filterTanggal" class="form-control">
+    <!-- Dashboard -->
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-4">
+        <div class="summary-card bg-income">
+          <p>Pendapatan Bulan Ini</p>
+          <h3 id="totalPendapatan">Rp 0</h3>
+        </div>
       </div>
-      <div class="col-md-4">
-        <input type="text" id="filterKategori" class="form-control" placeholder="Cari kategori...">
+      <div class="col-12 col-md-4">
+        <div class="summary-card bg-expense">
+          <p>Pengeluaran Bulan Ini</p>
+          <h3 id="totalPengeluaran">Rp 0</h3>
+        </div>
       </div>
-      <div class="col-md-4">
-        <button class="btn btn-outline-secondary w-100" id="btnFilter">Terapkan Filter</button>
+      <div class="col-12 col-md-4">
+        <div class="summary-card bg-balance">
+          <p>Saldo Bulan Ini</p>
+          <h3 id="saldoBulan">Rp 0</h3>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Tabel Data -->
-  <div class="card p-4 shadow-sm mb-5">
-    <h5>📊 Riwayat Transaksi</h5>
-    <table class="table table-striped mt-3" id="tabelData">
-      <thead>
-        <tr>
-          <th>Tanggal</th>
-          <th>Jenis</th>
-          <th>Kategori</th>
-          <th>Jumlah (Rp)</th>
-          <th>Sumber</th>
-          <th>Catatan</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <!-- Anggaran Bulanan -->
+    <div class="card p-4 mb-4 shadow-sm">
+      <h5>🎯 Anggaran Bulanan</h5>
+      <div class="input-group mt-2 mb-2">
+        <span class="input-group-text">Rp</span>
+        <input type="number" id="anggaran" class="form-control" placeholder="Masukkan anggaran pengeluaran bulan ini">
+        <button class="btn btn-outline-primary" id="simpanAnggaran">Simpan</button>
+      </div>
+    </div>
+
+    <!-- Form Input -->
+    <div class="card p-4 mb-4 shadow-sm">
+      <h5>➕ Tambah Transaksi</h5>
+      <form id="formTransaksi">
+        <div class="row g-2 mb-2">
+          <div class="col-6 col-md-3">
+            <select class="form-select" id="jenis" required>
+              <option value="">Jenis</option>
+              <option value="Pendapatan">Pendapatan</option>
+              <option value="Pengeluaran">Pengeluaran</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3">
+            <input type="text" class="form-control" id="kategori" placeholder="Kategori" required>
+          </div>
+          <div class="col-6 col-md-2">
+            <input type="number" class="form-control" id="jumlah" placeholder="Rp" required>
+          </div>
+          <div class="col-6 col-md-2">
+            <select class="form-select" id="sumber" required>
+              <option value="Cash">Cash</option>
+              <option value="M-Banking">M-Banking</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-2">
+            <input type="text" class="form-control" id="catatan" placeholder="Catatan">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2 w-100">💾 Simpan Transaksi</button>
+      </form>
+    </div>
+
+    <!-- Filter -->
+    <div class="card p-4 mb-4 shadow-sm">
+      <h5>🔍 Filter Transaksi</h5>
+      <div class="row g-2 mb-3">
+        <div class="col-6 col-md-4">
+          <input type="date" id="filterTanggal" class="form-control">
+        </div>
+        <div class="col-6 col-md-4">
+          <input type="text" id="filterKategori" class="form-control" placeholder="Cari kategori...">
+        </div>
+        <div class="col-12 col-md-4">
+          <button class="btn btn-outline-secondary w-100" id="btnFilter">Terapkan Filter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel -->
+    <div class="card p-4 shadow-sm mb-5">
+      <h5>📋 Riwayat Transaksi</h5>
+      <div class="table-responsive">
+        <table class="table table-striped mt-3" id="tabelData">
+          <thead class="table-primary">
+            <tr>
+              <th>Tanggal</th>
+              <th>Jenis</th>
+              <th>Kategori</th>
+              <th>Jumlah (Rp)</th>
+              <th>Sumber</th>
+              <th>Catatan</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyqr9c5SKoB5MRckzH8-d62Zs6JQohXU1N5RbVFDlJxRBYbPtiPZtCuK5pEClCqJMKk/exec"; // ganti dengan URL Google Apps Script kamu
+    const API_URL = "https://script.google.com/macros/s/AKfycbyqr9c5SKoB5MRckzH8-d62Zs6JQohXU1N5RbVFDlJxRBYbPtiPZtCuK5pEClCqJMKk/exec"; // Ganti dengan URL kamu
     const notif = document.getElementById("notif");
     let semuaData = [];
     let anggaranBulanan = localStorage.getItem("anggaran") ? Number(localStorage.getItem("anggaran")) : 0;
 
-    // --- Load Data ---
     async function loadData() {
       const res = await fetch(API_URL);
       const data = await res.json();
       semuaData = data;
       tampilkanData(data);
+      updateDashboard();
       cekAnggaran();
     }
 
-    // --- Tampilkan Data di Tabel ---
     function tampilkanData(data) {
       const tbody = document.querySelector("#tabelData tbody");
       tbody.innerHTML = "";
@@ -139,37 +188,38 @@
       });
     }
 
-    // --- Simpan Transaksi ---
-    document.getElementById("formTransaksi").addEventListener("submit", async e => {
-      e.preventDefault();
-      const data = {
-        jenis: jenis.value,
-        kategori: kategori.value,
-        jumlah: jumlah.value,
-        sumber: sumber.value,
-        catatan: catatan.value
-      };
-      await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      e.target.reset();
-      await loadData();
-      alert("✅ Data berhasil disimpan!");
-    });
+    // Dashboard summary
+    function updateDashboard() {
+      const bulan = new Date().toISOString().slice(0,7);
+      const pendapatan = semuaData
+        .filter(d => d.Jenis === "Pendapatan" && d.Tanggal.startsWith(bulan))
+        .reduce((sum,d) => sum + Number(d.Jumlah||0), 0);
+      const pengeluaran = semuaData
+        .filter(d => d.Jenis === "Pengeluaran" && d.Tanggal.startsWith(bulan))
+        .reduce((sum,d) => sum + Number(d.Jumlah||0), 0);
+      const saldo = pendapatan - pengeluaran;
 
-    // --- Filter ---
-    document.getElementById("btnFilter").addEventListener("click", () => {
-      const tgl = document.getElementById("filterTanggal").value;
-      const kat = document.getElementById("filterKategori").value.toLowerCase();
-      const filtered = semuaData.filter(d =>
-        (!tgl || d.Tanggal === tgl) &&
-        (!kat || d.Kategori.toLowerCase().includes(kat))
-      );
-      tampilkanData(filtered);
-    });
+      document.getElementById("totalPendapatan").innerText = "Rp " + pendapatan.toLocaleString("id-ID");
+      document.getElementById("totalPengeluaran").innerText = "Rp " + pengeluaran.toLocaleString("id-ID");
+      document.getElementById("saldoBulan").innerText = "Rp " + saldo.toLocaleString("id-ID");
+    }
 
-    // --- Simpan Anggaran ---
+    // Cek anggaran
+    function cekAnggaran() {
+      if (!anggaranBulanan) return;
+      const bulan = new Date().toISOString().slice(0,7);
+      const total = semuaData
+        .filter(d => d.Jenis === "Pengeluaran" && d.Tanggal.startsWith(bulan))
+        .reduce((sum,d) => sum + Number(d.Jumlah||0), 0);
+      if (total > anggaranBulanan) {
+        notif.innerText = `⚠️ Pengeluaran bulan ini (${total.toLocaleString("id-ID")}) melebihi anggaran (${anggaranBulanan.toLocaleString("id-ID")})`;
+        notif.style.display = "block";
+      } else {
+        notif.style.display = "none";
+      }
+    }
+
+    // Simpan anggaran
     document.getElementById("simpanAnggaran").addEventListener("click", () => {
       const val = Number(document.getElementById("anggaran").value);
       if (val > 0) {
@@ -180,23 +230,34 @@
       }
     });
 
-    // --- Cek Pengeluaran vs Anggaran ---
-    function cekAnggaran() {
-      if (!anggaranBulanan) return;
-      const bulanSekarang = new Date().toISOString().slice(0, 7); // contoh: 2025-10
-      const totalPengeluaran = semuaData
-        .filter(d => d.Jenis === "Pengeluaran" && d.Tanggal.startsWith(bulanSekarang))
-        .reduce((sum, d) => sum + Number(d.Jumlah || 0), 0);
+    // Simpan transaksi
+    document.getElementById("formTransaksi").addEventListener("submit", async e => {
+      e.preventDefault();
+      const data = {
+        jenis: jenis.value,
+        kategori: kategori.value,
+        jumlah: jumlah.value,
+        sumber: sumber.value,
+        catatan: catatan.value
+      };
+      await fetch(API_URL, { method: "POST", body: JSON.stringify(data) });
+      e.target.reset();
+      await loadData();
+      alert("✅ Data berhasil disimpan!");
+    });
 
-      if (totalPengeluaran > anggaranBulanan) {
-        notif.innerText = `⚠️ Pengeluaran bulan ini (${totalPengeluaran.toLocaleString("id-ID")}) melebihi anggaran (${anggaranBulanan.toLocaleString("id-ID")})`;
-        notif.style.display = "block";
-      } else {
-        notif.style.display = "none";
-      }
-    }
+    // Filter data
+    document.getElementById("btnFilter").addEventListener("click", () => {
+      const tgl = document.getElementById("filterTanggal").value;
+      const kat = document.getElementById("filterKategori").value.toLowerCase();
+      const filtered = semuaData.filter(d =>
+        (!tgl || d.Tanggal === tgl) &&
+        (!kat || d.Kategori.toLowerCase().includes(kat))
+      );
+      tampilkanData(filtered);
+    });
 
-    // --- Auto Refresh tiap 15 detik ---
+    // Auto refresh tiap 15 detik
     loadData();
     setInterval(loadData, 15000);
   </script>
