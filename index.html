@@ -307,16 +307,20 @@
     }
 
     function filterTanggal() {
-      const s = document.getElementById("startDate").value;
-      const e = document.getElementById("endDate").value;
-      if (!s || !e) return alert("Pilih tanggal awal dan akhir!");
-      const start = new Date(s), end = new Date(e);
-      const filtered = semuaData.filter(t => {
-        const td = new Date(t.tanggal);
-        return td >= start && td <= end;
-      });
-      renderRiwayat(filtered);
-    }
+  const s = document.getElementById("startDate").value;
+  const e = document.getElementById("endDate").value;
+  if (!s || !e) return alert("Pilih tanggal awal dan akhir!");
+  
+  const start = new Date(s);
+  const end = new Date(e);
+  end.setHours(23,59,59,999); // Tambahkan akhir hari
+  
+  const filtered = semuaData.filter(t => {
+    const td = new Date(t.tanggal);
+    return td >= start && td <= end;
+  });
+  renderRiwayat(filtered);
+}
 
     function renderDashboard() {
       let pendapatan=0,pengeluaran=0,cash=0,bank=0,wallet=0;
@@ -389,7 +393,7 @@
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 
     loadData();
-    setInterval(loadData, 15000);
+    setInterval(loadData, 25000);
   </script>
 
 </body>
