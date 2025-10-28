@@ -3,8 +3,8 @@
   "short_name": "Finance Nativan",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#6c83d5",
-  "theme_color": "#2c40bf",
+  "background_color": "#ffffff",
+  "theme_color": "#0850d6",
   "icons": [
     {
       "src": "https://img.icons8.com/bubbles/100/cash.png",
