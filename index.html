@@ -304,6 +304,52 @@
         animation: spin 0.8s linear infinite;
       }
 
+      .toast {
+        position: fixed; /* agar tetap di viewport */
+        top: 20px; /* jarak dari atas */
+        left: 50%; /* center horizontal */
+        transform: translateX(-50%) translateY(-20px); /* center dan efek animasi */
+        background-color: #ec1f1f;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        min-width: 220px;
+        max-width: 300px;
+        font-size: 0.9rem;
+        opacity: 0;
+        transition: all 0.4s ease;
+        z-index: 9999; /* pastikan di atas elemen lain */
+        text-align: center; /* teks di tengah */
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0); /* animasi slide dari atas */
+      }
+
+      #overlayToast {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.7);
+        background-color: #22a707;
+        color: #fff;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        font-size: 1rem;
+        opacity: 0;
+        transition: all 0.4s ease;
+        z-index: 10000;
+        text-align: center;
+      }
+
+      #overlayToast.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
       @keyframes spin {
         0% {
           transform: rotate(0deg);
@@ -341,24 +387,39 @@
     <!-- 🔄 Loading overlay -->
     <div id="loadingOverlay">
       <div class="spinner"></div>
+      <div id="overlayToast">
+        <span id="overlayToastText">✅ Input berhasil!</span>
+      </div>
     </div>
 
     <div class="container">
+      <!-- Toast Notification -->
+      <div
+        id="toastContainer"
+        style="position: fixed; top: 20px; right: 20px; z-index: 9999"
+      ></div>
       <div class="title">💰 Keuangan Rumah Tangga Nativan</div>
 
       <div class="balance mb-3">
         <h5>Saldo Total</h5>
         <h2 id="saldo">Rp 0</h2>
         <div class="sub-balances">
-          <div class="sub-balance">
+          <div class="sub-balance" onclick="tampilkanDetailSaldo('Cash')">
             Cash<br /><span id="saldoCash">Rp 0</span>
           </div>
-          <div class="sub-balance">
+          <div class="sub-balance" onclick="tampilkanDetailSaldo('M-Banking')">
             M-Banking<br /><span id="saldoBank">Rp 0</span>
           </div>
-          <div class="sub-balance">
+          <div class="sub-balance" onclick="tampilkanDetailSaldo('E-Wallet')">
             E-Wallet<br /><span id="saldoWallet">Rp 0</span>
           </div>
+        </div>
+
+        <div class="detail-wrapper mt-3">
+          <div
+            id="detailSaldoContainer"
+            style="overflow: hidden; height: 0; transition: height 0.4s ease"
+          ></div>
         </div>
       </div>
 
@@ -416,11 +477,27 @@
           />
         </div>
         <div class="mb-3">
+          <label class="form-label">Kepemilikan</label>
+          <select id="kepemilikan" class="form-select">
+            <option value="Ayah">Ayah</option>
+            <option value="Ibun">Ibun</option>
+            <option value="Izora">Izora</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
           <label class="form-label">Dompet</label>
           <select id="dompet" class="form-select">
             <option value="Cash">Cash</option>
             <option value="M-Banking">M-Banking</option>
             <option value="E-Wallet">E-Wallet</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Detail Dompet</label>
+          <select id="dompetDetail" class="form-select">
+            <option value="">-- Pilih --</option>
           </select>
         </div>
         <button class="btn btn-blue" onclick="simpanTransaksi()">Simpan</button>
@@ -454,7 +531,7 @@
 
     <script>
       const SCRIPT_URL =
-        "https://script.google.com/macros/s/AKfycbysX6FqTkoj_KJEa9lhhpKfLWKGI_9h4JslangxFV7K9291ArOOJydUz2jDu4DP0vHA/exec";
+        "https://script.google.com/macros/s/AKfycbw6k_zAJQbu-y37sV0FYecQTc9F3Wo_SZ7IhteJrSWmLHhb50vYbYchGPlb_3WNWml9/exec";
       let semuaData = [];
 
       const showLoading = (show = true) => {
@@ -499,37 +576,69 @@
       const nominalEl = document.getElementById("nominal");
       const deskripsiEl = document.getElementById("deskripsi");
       const dompetEl = document.getElementById("dompet");
+      const kepemilikanEl = document.getElementById("kepemilikan");
+
+      const dompetDetailEl = document.getElementById("dompetDetail");
+
+      const detailOptions = {
+        Cash: ["Cash"],
+        "M-Banking": ["BTN", "Mandiri", "BRI", "BSI"],
+        "E-Wallet": ["Gopay", "Dana", "OVO", "ShopeePay", "LinkAja"],
+      };
+
+      // Update dropdown detail dompet saat dompet dipilih
+      dompetEl.addEventListener("change", () => {
+        const dompet = dompetEl.value;
+        const options = detailOptions[dompet] || [];
+        dompetDetailEl.innerHTML = '<option value="">-- Pilih --</option>'; // reset
+
+        options.forEach((opt) => {
+          const el = document.createElement("option");
+          el.value = opt;
+          el.textContent = opt;
+          dompetDetailEl.appendChild(el);
+        });
+      });
 
       async function simpanTransaksi() {
         const jenis = jenisEl.value,
           kategori = kategoriEl.value,
           nominal = nominalEl.value.replace(/\./g, ""),
           deskripsi = deskripsiEl.value,
-          dompet = dompetEl.value;
+          dompet = dompetEl.value,
+          kepemilikan = kepemilikanEl.value,
+          dompetDetail = dompetDetailEl.value;
 
         if (!kategori || !nominal)
-          return alert("Lengkapi kategori dan nominal!");
+          return showToast("Lengkapi kategori dan nominal!", 3000, "error");
 
+        // spinner aktif
         showLoading(true);
+
         await fetch(SCRIPT_URL, {
           method: "POST",
           mode: "no-cors",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ jenis, kategori, nominal, deskripsi, dompet }),
+          body: JSON.stringify({
+            jenis,
+            kategori,
+            nominal,
+            deskripsi,
+            dompet,
+            dompetDetail,
+            kepemilikan,
+          }),
         });
+
+        // spinner hilang
         showLoading(false);
-        showNotif("✅ Transaksi disimpan!");
+
+        // toast muncul setelah spinner hilang
+        setTimeout(() => showOverlayToast("✅ Transaksi berhasil!"), 200);
+
         loadData();
         kategoriEl.value = nominalEl.value = deskripsiEl.value = "";
-
-        if (Notification.permission === "granted") {
-          new Notification("✅ Transaksi baru disimpan!", {
-            body: `${jenis} ${kategori} sebesar ${formatRupiah(nominal)}`,
-            icon: "https://cdn-icons-png.flaticon.com/512/1170/1170678.png",
-          });
-        } else if (Notification.permission !== "denied") {
-          Notification.requestPermission();
-        }
+        dompetDetailEl.value = "";
       }
 
       async function loadData() {
@@ -552,7 +661,7 @@
       function filterTanggal() {
         const s = document.getElementById("startDate").value;
         const e = document.getElementById("endDate").value;
-        if (!s || !e) return alert("Pilih tanggal awal dan akhir!");
+        if (!s || !e) return showToast("Pilih tanggal awal dan akhir!");
         const start = new Date(s);
         const end = new Date(e);
         end.setHours(23, 59, 59, 999);
@@ -595,6 +704,57 @@
         document.getElementById("saldoWallet").innerText = formatRupiah(wallet);
       }
 
+      let detailOpen = null;
+      const container = document.getElementById("detailSaldoContainer");
+
+      document.querySelectorAll(".sub-balance").forEach((card) => {
+        card.addEventListener("click", () => {
+          const tipe = card.textContent.includes("Cash")
+            ? "Cash"
+            : card.textContent.includes("M-Banking")
+            ? "M-Banking"
+            : "E-Wallet";
+          toggleDetail(tipe);
+        });
+      });
+
+      function toggleDetail(tipe) {
+        if (detailOpen === tipe) {
+          // tutup
+          container.style.height = "0";
+          detailOpen = null;
+        } else {
+          // isi detail
+          container.innerHTML = "";
+          const dataFiltered = semuaData.filter((t) => t.dompet === tipe);
+          if (dataFiltered.length === 0) {
+            container.innerHTML = `<p class="text-center">Tidak ada data untuk ${tipe}</p>`;
+          } else {
+            const summary = {};
+            dataFiltered.forEach((t) => {
+              const key = `${t.kepemilikan} - ${t.dompetDetail}`;
+              summary[key] =
+                (summary[key] || 0) +
+                (t.jenis === "Pendapatan"
+                  ? parseInt(t.nominal)
+                  : -parseInt(t.nominal));
+            });
+            Object.entries(summary).forEach(([k, v]) => {
+              const card = document.createElement("div");
+              card.className = "summary-card mb-2";
+              card.innerHTML = `<h6>${k}</h6><h3>${formatRupiah(v)}</h3>`;
+              container.appendChild(card);
+            });
+          }
+
+          // tampilkan slide down
+          container.style.display = "block";
+          const scrollH = container.scrollHeight;
+          container.style.height = scrollH + "px";
+          detailOpen = tipe;
+        }
+      }
+
       function renderRiwayat(data) {
         const container = document.getElementById("riwayatContainer");
         container.innerHTML = "";
@@ -608,21 +768,23 @@
           .reverse()
           .forEach((trx) => {
             container.innerHTML += `
-          <div class="trx-card">
-            <div class="trx-header">
-              <h6>${trx.kategori.toUpperCase()}</h6>
-              <span class="trx-date">${formatTanggal(trx.tanggal)}</span>
-            </div>
-            <div class="trx-detail">
-              <span>${trx.jenis} • ${trx.dompet}</span>
-              <span class="trx-nominal ${trx.jenis.toLowerCase()}">${formatRupiah(
+      <div class="trx-card">
+        <div class="trx-header">
+          <h6>${trx.kategori.toUpperCase()}</h6>
+          <span class="trx-date">${formatTanggal(trx.tanggal)}</span>
+        </div>
+        <div class="trx-detail">
+          <span>${trx.jenis} • ${trx.kepemilikan} • ${trx.dompet} (${
+              trx.dompetDetail
+            })</span>
+          <span class="trx-nominal ${trx.jenis.toLowerCase()}">${formatRupiah(
               trx.nominal
             )}</span>
-            </div>
-            <small class="trx-deskripsi">${capitalizeFirst(
-              trx.deskripsi || "-"
-            )}</small>
-          </div>`;
+        </div>
+        <small class="trx-deskripsi">${capitalizeFirst(
+          trx.deskripsi || "-"
+        )}</small>
+      </div>`;
           });
       }
 
@@ -634,6 +796,109 @@
             .includes(keyword)
         );
         renderRiwayat(filtered);
+      }
+
+      function showToast(message, duration = 3000, type = "info") {
+        const container = document.getElementById("toastContainer");
+        const toast = document.createElement("div");
+        toast.className = "toast";
+        toast.innerText = message;
+
+        // optional: warna berbeda untuk type
+        if (type === "error") toast.style.backgroundColor = "#e63946";
+        else if (type === "success") toast.style.backgroundColor = "#22a707";
+
+        container.appendChild(toast);
+
+        // tampilkan animasi
+        requestAnimationFrame(() => toast.classList.add("show"));
+
+        // hilangkan otomatis
+        setTimeout(() => {
+          toast.classList.remove("show");
+          toast.addEventListener("transitionend", () => toast.remove());
+        }, duration);
+      }
+
+      let overlayToastVisible = false;
+
+      function showOverlayToast(message = "✅ Berhasil!", duration = 1500) {
+        if (overlayToastVisible) return;
+
+        overlayToastVisible = true;
+        const toast = document.getElementById("overlayToast");
+        document.getElementById("overlayToastText").innerText = message;
+
+        toast.classList.remove("show");
+        toast.offsetWidth; // trigger reflow
+        toast.classList.add("show");
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+          overlayToastVisible = false;
+        }, duration);
+      }
+
+      function exportExcel() {
+        const keyword = document.getElementById("filter").value.toLowerCase();
+        const startDateVal = document.getElementById("startDate").value;
+        const endDateVal = document.getElementById("endDate").value;
+        let filtered = semuaData.slice();
+
+        if (keyword) {
+          filtered = filtered.filter((t) =>
+            (t.kategori + t.dompet + t.jenis + t.deskripsi)
+              .toLowerCase()
+              .includes(keyword)
+          );
+        }
+
+        if (startDateVal && endDateVal) {
+          const start = new Date(startDateVal);
+          const end = new Date(endDateVal);
+          end.setHours(23, 59, 59, 999);
+          filtered = filtered.filter((t) => {
+            const td = new Date(t.tanggal);
+            return td >= start && td <= end;
+          });
+        }
+
+        if (filtered.length === 0) {
+          showToast("Tidak ada data untuk diekspor!");
+          return;
+        }
+
+        // Fungsi format tanggal
+        const formatTanggalExcel = (t) => {
+          const d = new Date(t);
+          if (isNaN(d)) return "-";
+          return `${d.getDate().toString().padStart(2, "0")}/${(
+            d.getMonth() + 1
+          )
+            .toString()
+            .padStart(2, "0")}/${d.getFullYear()} ${d
+            .getHours()
+            .toString()
+            .padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
+        };
+
+        // Buat header kolom CSV
+        let csv = "Jenis,Kategori,Nominal,Deskripsi,Dompet,Tanggal\n";
+
+        // Isi data CSV dengan format tanggal yang sudah diperbaiki
+        filtered.forEach((trx) => {
+          csv += `${trx.jenis},${trx.kategori},${trx.nominal},"${
+            trx.deskripsi
+          }",${trx.dompet},${formatTanggalExcel(trx.tanggal)}\n`;
+        });
+
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "keuangan_nativan.csv";
+        a.click();
+        URL.revokeObjectURL(url);
       }
 
       if ("serviceWorker" in navigator)
