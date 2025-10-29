@@ -901,6 +901,32 @@
         URL.revokeObjectURL(url);
       }
 
+      // Tambahkan event agar "Cash" muncul langsung saat pertama kali halaman dibuka
+      window.addEventListener("DOMContentLoaded", () => {
+        updateDetailDompet();
+      });
+
+      // Ubah bagian event listener dompet agar memanggil fungsi baru
+      dompetEl.addEventListener("change", updateDetailDompet);
+
+      function updateDetailDompet() {
+        const dompet = dompetEl.value;
+        const options = detailOptions[dompet] || [];
+        dompetDetailEl.innerHTML = '<option value="">-- Pilih --</option>';
+
+        options.forEach((opt) => {
+          const el = document.createElement("option");
+          el.value = opt;
+          el.textContent = opt;
+          dompetDetailEl.appendChild(el);
+        });
+      }
+
+      // Tambahkan juga listener agar tetap update jika user klik ulang opsi yang sama
+      dompetEl.addEventListener("click", () => {
+        updateDetailDompet();
+      });
+
       if ("serviceWorker" in navigator)
         navigator.serviceWorker.register("sw.js");
 
