@@ -1,65 +1,99 @@
-const CACHE_NAME = "nativan-finance-v2"; // ubah versi setiap kali update besar
+const CACHE_NAME = "nativan-finance-v3"; // update versi jika ada perubahan besar
+
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
-  "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css",
+
+  // CDN
+  "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 ];
 
-// Install - cache file utama
+
+// INSTALL
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS);
+    })
   );
-  self.skipWaiting(); // langsung aktif tanpa nunggu versi lama selesai
+
+  // langsung aktif tanpa menunggu SW lama
+  self.skipWaiting();
 });
 
-// Activate - hapus cache lama
+
+// ACTIVATE
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(
-          keys
-            .filter((key) => key !== CACHE_NAME)
-            .map((key) => caches.delete(key))
-        )
-      )
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys
+          .filter((key) => key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
+      );
+    })
   );
+
   self.clients.claim();
 });
 
-// Fetch - network first untuk index.html, cache first untuk file lain
+
+// FETCH
 self.addEventListener("fetch", (event) => {
   const req = event.request;
 
-  // HTML → selalu ambil dari jaringan dulu, agar update langsung muncul
-  if (req.mode === "navigate" || req.url.endsWith("index.html")) {
+  // hanya handle GET request
+  if (req.method !== "GET") return;
+
+  // ===== HTML (Network First) =====
+  if (req.mode === "navigate" || req.headers.get("accept").includes("text/html")) {
     event.respondWith(
       fetch(req)
         .then((networkRes) => {
-          const resClone = networkRes.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
+
+          const clone = networkRes.clone();
+
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(req, clone);
+          });
+
           return networkRes;
         })
-        .catch(() => caches.match(req))
+        .catch(() => {
+          return caches.match(req).then((res) => {
+            return res || caches.match("./index.html");
+          });
+        })
     );
   }
-  // Selain HTML → ambil dari cache dulu, baru jaringan
+
+  // ===== Asset (Cache First) =====
   else {
+
     event.respondWith(
-      caches.match(req).then(
-        (cacheRes) =>
-          cacheRes ||
-          fetch(req).then((networkRes) => {
-            const resClone = networkRes.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
-            return networkRes;
-          })
-      )
+      caches.match(req).then((cacheRes) => {
+
+        if (cacheRes) return cacheRes;
+
+        return fetch(req).then((networkRes) => {
+
+          const clone = networkRes.clone();
+
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(req, clone);
+          });
+
+          return networkRes;
+
+        }).catch(() => {
+          return caches.match("./index.html");
+        });
+
+      })
     );
+
   }
 });
