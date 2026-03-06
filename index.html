@@ -8,6 +8,11 @@
     <link rel="icon" href="assets/icons/icon-192.png" type="image/png" />
     <link rel="apple-touch-icon" href="assets/icons/icon-512.png" />
     <meta name="apple-mobile-web-app-status-bar" content="#7b2cbf" />
+    <meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Finance Nativan" />
+<meta name="theme-color" content="#2563eb" />
 
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#0850d6" />
@@ -39,6 +44,7 @@ body{
   min-height:100vh;
   padding-bottom:100px;
   -webkit-font-smoothing:antialiased;
+  padding-bottom:120px;
 }
 
 .container{
@@ -350,6 +356,58 @@ flex-direction:column;
 align-items:flex-start;
 }
 
+}
+
+      .fab-add{
+position:fixed;
+bottom:80px;
+right:20px;
+width:55px;
+height:55px;
+border:none;
+border-radius:50%;
+background:#2563eb;
+color:white;
+font-size:28px;
+box-shadow:0 8px 20px rgba(0,0,0,.2);
+cursor:pointer;
+transition:.2s;
+z-index:999;
+}
+
+.fab-add:hover{
+transform:scale(1.08);
+}
+
+      .bottom-nav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:white;
+border-top:1px solid #eee;
+display:flex;
+justify-content:space-around;
+padding:8px 0;
+z-index:999;
+box-shadow:0 -3px 12px rgba(0,0,0,.05);
+        padding-bottom:env(safe-area-inset-bottom);
+}
+
+.bottom-nav button{
+background:none;
+border:none;
+display:flex;
+flex-direction:column;
+align-items:center;
+font-size:18px;
+color:#555;
+font-weight:500;
+}
+
+.bottom-nav span{
+font-size:.65rem;
+margin-top:2px;
 }
     </style>
   </head>
@@ -904,5 +962,25 @@ align-items:flex-start;
       loadData();
       // setInterval(loadData, 30000);
     </script>
+    <button class="fab-add" onclick="document.querySelector('.form-card').scrollIntoView({behavior:'smooth'})">
+＋
+</button>
+
+    <div class="bottom-nav">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    🏠
+    <span>Home</span>
+  </button>
+
+  <button onclick="document.querySelector('.form-card').scrollIntoView({behavior:'smooth'})">
+    ➕
+    <span>Tambah</span>
+  </button>
+
+  <button onclick="document.querySelector('.riwayat-title').scrollIntoView({behavior:'smooth'})">
+    📜
+    <span>Riwayat</span>
+  </button>
+</div>
   </body>
 </html>
