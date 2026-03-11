@@ -942,15 +942,30 @@ justify-content:center;
     }
 
     async function loadData() {
-      showLoading(true);
-      const res = await fetch(SCRIPT_URL);
-      const data = await res.json();
-      semuaData = data;
-      semuaBudget = data.budget
-      renderDashboard();
-      renderRiwayat(filter3HariTerakhir(data));
-      showLoading(false);
-    }
+
+  showLoading(true);
+
+  try {
+
+    const res = await fetch(SCRIPT_URL);
+    const data = await res.json();
+
+    semuaData = data.transaksi || [];
+    semuaBudget = data.budget || [];
+
+    renderDashboard();
+    renderRiwayat(filter3HariTerakhir(semuaData));
+
+  } catch (err) {
+
+    console.error(err);
+    showToast("Gagal memuat data",3000,"error");
+
+  }
+
+  showLoading(false);
+
+}
 
     function filter3HariTerakhir(data) {
       const now = new Date();
@@ -1323,8 +1338,8 @@ const tahun=now.getFullYear()
 let budget=0
 
 semuaBudget.forEach(b=>{
-if(b[0]==bulan && b[1]==tahun){
-budget=parseInt(b[2])
+if(b.bulan==bulan && b.tahun==tahun){
+budget=parseInt(b.budget)
 }
 })
 
