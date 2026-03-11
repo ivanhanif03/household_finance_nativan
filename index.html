@@ -515,6 +515,64 @@
         transform: translateY(0);
       }
     }
+
+    .budget-card{
+  background: linear-gradient(135deg,#22c55e,#16a34a);
+  border-radius:20px;
+  padding:18px;
+  color:white;
+  box-shadow:0 10px 25px rgba(0,0,0,.1);
+  margin-bottom:16px;
+  position:relative;
+  overflow:hidden;
+}
+
+.budget-progress{
+  height:10px;
+  background:rgba(255,255,255,.25);
+  border-radius:10px;
+  margin-top:10px;
+}
+
+.budget-bar{
+  height:100%;
+  border-radius:10px;
+  width:0%;
+  background:#22c55e;
+  transition:width .4s ease;
+}
+
+.budget-warning{
+  font-size:.8rem;
+  margin-top:6px;
+  font-weight:600;
+}
+
+.warning80{color:#fde047;}
+.warning90{color:#fb923c;}
+.warning100{color:#ef4444;}
+
+.budget-input{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+
+.budget-input input{
+  flex:1;
+  border-radius:10px;
+  border:none;
+  padding:6px 10px;
+}
+
+.budget-input button{
+  border:none;
+  background:white;
+  color:#16a34a;
+  font-weight:600;
+  border-radius:10px;
+  padding:6px 12px;
+}
   </style>
 </head>
 
@@ -662,6 +720,27 @@ justify-content:center;
         </div>
       </div>
     </div>
+
+    <div class="budget-card">
+
+<h6>📊 Budget Pengeluaran Bulanan</h6>
+
+<h4 id="budgetSisa">Rp 0</h4>
+
+<div class="budget-progress">
+<div class="budget-bar" id="budgetBar"></div>
+</div>
+
+<div id="budgetWarning" class="budget-warning"></div>
+
+<div class="budget-input">
+<input type="text" id="budgetInput" placeholder="Set budget bulanan">
+<button onclick="setBudget()">Set</button>
+</div>
+
+<small>Budget akan otomatis terakumulasi dari sisa bulan sebelumnya</small>
+
+</div>
 
     <!-- <div class="form-card">
         <h5 class="fw-bold mb-3 text-center" style="color: #04215f">
@@ -922,6 +1001,7 @@ justify-content:center;
       document.getElementById("saldoCash").innerText = formatRupiah(cash);
       document.getElementById("saldoBank").innerText = formatRupiah(bank);
       document.getElementById("saldoWallet").innerText = formatRupiah(wallet);
+      updateBudget()
     }
 
     let detailOpen = null;
@@ -1198,6 +1278,79 @@ justify-content:center;
       localStorage.removeItem("login_nativan");
     }
 
+    document.getElementById("budgetInput").addEventListener("input", (e)=>{
+  e.target.value = e.target.value
+  .replace(/\D/g,"")
+  .replace(/\B(?=(\d{3})+(?!\d))/g,".")
+})
+
+    function setBudget(){
+
+let val=document.getElementById("budgetInput").value.replace(/\./g,"")
+if(!val) return
+
+localStorage.setItem("budgetBulanan",val)
+
+updateBudget()
+
+showToast("Budget berhasil disimpan","2000","success")
+
+}
+
+    function updateBudget(){
+
+let budget=parseInt(localStorage.getItem("budgetBulanan")||0)
+
+let pengeluaran=0
+
+semuaData.forEach(t=>{
+if(t.jenis==="Pengeluaran"){
+pengeluaran+=parseInt(t.nominal)
+}
+})
+
+let persen = budget ? (pengeluaran/budget)*100 : 0
+
+let sisa = budget - pengeluaran
+
+document.getElementById("budgetSisa").innerText =
+"Budget tersisa: "+formatRupiah(Math.max(sisa,0))
+
+const bar=document.getElementById("budgetBar")
+bar.style.width=Math.min(persen,100)+"%"
+
+const warning=document.getElementById("budgetWarning")
+
+if(persen>=100){
+
+bar.style.background="#ef4444"
+warning.innerHTML="⚠ Budget sudah HABIS!"
+warning.className="budget-warning warning100"
+
+}
+else if(persen>=90){
+
+bar.style.background="#fb923c"
+warning.innerHTML="⚠ Budget hampir habis (90%)"
+warning.className="budget-warning warning90"
+
+}
+else if(persen>=80){
+
+bar.style.background="#fde047"
+warning.innerHTML="⚠ Budget sudah mencapai 80%"
+warning.className="budget-warning warning80"
+
+}
+else{
+
+bar.style.background="#22c55e"
+warning.innerHTML="Budget masih aman"
+warning.className="budget-warning"
+
+}
+
+}
   </script>
 
   <button class="fab-add" onclick="openModal()">
