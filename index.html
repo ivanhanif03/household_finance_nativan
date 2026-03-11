@@ -942,33 +942,38 @@ justify-content:center;
       dompetDetailEl.value = "";
     }
 
-    async function loadData() {
+   async function loadData(){
 
-  showLoading(true);
+showLoading(true);
 
-  try {
+try{
 
-    const res = await fetch(SCRIPT_URL + "?t=" + Date.now());
+const res = await fetch(SCRIPT_URL + "?v=" + new Date().getTime(),{
+method:"GET",
+cache:"no-store"
+});
 
-    const data = await res.json();
+const text = await res.text();
+const data = JSON.parse(text);
 
-    console.log("DATA API:", data);
+console.log("API:",data);
 
-    semuaData = data.transaksi || [];
-    console.log("SEMUA DATA:", semuaData)
-    semuaBudget = data.budget || [];
+semuaData = data.transaksi || [];
+semuaBudget = data.budget || [];
 
-    renderDashboard();
-    renderRiwayat(filter3HariTerakhir(semuaData));
+console.log("DATA TRANSAKSI:",semuaData);
 
-  } catch (err) {
+renderDashboard();
+renderRiwayat(filter3HariTerakhir(semuaData));
 
-    console.error(err);
-    showToast("Gagal memuat data",3000,"error");
+}catch(err){
 
-  }
+console.error("ERROR LOAD DATA:",err);
+showToast("Gagal mengambil data dari Google Sheet",3000,"error");
 
-  showLoading(false);
+}
+
+showLoading(false);
 
 }
 
@@ -995,47 +1000,48 @@ justify-content:center;
 
    function renderDashboard(){
 
-let pendapatan = 0
-let pengeluaran = 0
-let cash = 0
-let bank = 0
-let wallet = 0
+let pendapatan = 0;
+let pengeluaran = 0;
+let cash = 0;
+let bank = 0;
+let wallet = 0;
 
 semuaData.forEach(trx=>{
 
-const n = Number(trx.nominal) || 0
-const jenis = (trx.jenis || "").trim().toLowerCase()
+const n = Number(trx.nominal) || 0;
+const jenis = String(trx.jenis || "").trim().toLowerCase();
 
-if(jenis === "pendapatan"){
+if(jenis==="pendapatan"){
 
-pendapatan += n
+pendapatan += n;
 
-if(trx.dompet === "Cash") cash += n
-else if(trx.dompet === "M-Banking") bank += n
-else wallet += n
-
-}
-else if(jenis === "pengeluaran"){
-
-pengeluaran += n
-
-if(trx.dompet === "Cash") cash -= n
-else if(trx.dompet === "M-Banking") bank -= n
-else wallet -= n
+if(trx.dompet==="Cash") cash+=n;
+else if(trx.dompet==="M-Banking") bank+=n;
+else wallet+=n;
 
 }
 
-})
+if(jenis==="pengeluaran"){
 
-document.getElementById("totalPendapatan").innerText = formatRupiah(pendapatan)
-document.getElementById("totalPengeluaran").innerText = formatRupiah(pengeluaran)
-document.getElementById("saldo").innerText = formatRupiah(pendapatan - pengeluaran)
+pengeluaran += n;
 
-document.getElementById("saldoCash").innerText = formatRupiah(cash)
-document.getElementById("saldoBank").innerText = formatRupiah(bank)
-document.getElementById("saldoWallet").innerText = formatRupiah(wallet)
+if(trx.dompet==="Cash") cash-=n;
+else if(trx.dompet==="M-Banking") bank-=n;
+else wallet-=n;
 
-updateBudget()
+}
+
+});
+
+document.getElementById("totalPendapatan").innerText = formatRupiah(pendapatan);
+document.getElementById("totalPengeluaran").innerText = formatRupiah(pengeluaran);
+document.getElementById("saldo").innerText = formatRupiah(pendapatan-pengeluaran);
+
+document.getElementById("saldoCash").innerText = formatRupiah(cash);
+document.getElementById("saldoBank").innerText = formatRupiah(bank);
+document.getElementById("saldoWallet").innerText = formatRupiah(wallet);
+
+updateBudget();
 
 }
 
@@ -1263,8 +1269,8 @@ updateBudget()
     if ("serviceWorker" in navigator)
       navigator.serviceWorker.register("sw.js");
 
-    loadData();
-    console.log(semuaData)
+    // loadData();
+    // console.log(semuaData)
     // setInterval(loadData, 30000);
 
     function openModal() {
@@ -1277,34 +1283,55 @@ updateBudget()
       document.getElementById("modalBackdrop").classList.remove("show")
     }
 
-    const APP_PASSWORD = "nativan300424"; // ganti password disini
+    const APP_PASSWORD="nativan300424";
 
-    function checkPassword() {
+function checkPassword(){
 
-      const input = document.getElementById("passwordInput").value;
+const input=document.getElementById("passwordInput").value;
 
-      if (input === APP_PASSWORD) {
+if(input===APP_PASSWORD){
 
-        localStorage.setItem("login_nativan", "true");
-        document.getElementById("loginScreen").style.display = "none";
+const loginData={
+status:true,
+time:Date.now()
+};
 
-      } else {
+localStorage.setItem("login_nativan",JSON.stringify(loginData));
 
-        document.getElementById("loginError").innerText = "Password salah";
+document.getElementById("loginScreen").style.display="none";
 
-      }
+loadData();
 
-    }
+}else{
 
-    window.addEventListener("load", () => {
+document.getElementById("loginError").innerText="Password salah";
 
-      const login = localStorage.getItem("login_nativan");
+}
 
-      if (login === "true") {
-        document.getElementById("loginScreen").style.display = "none";
-      }
+}
 
-    });
+    window.addEventListener("load",()=>{
+
+const login=localStorage.getItem("login_nativan");
+
+if(!login) return;
+
+const data=JSON.parse(login);
+
+const oneHour=60*60*1000;
+
+if(Date.now()-data.time < oneHour){
+
+document.getElementById("loginScreen").style.display="none";
+loadData();
+
+}else{
+
+localStorage.removeItem("login_nativan");
+
+}
+
+});
 
     localStorage.setItem("login_time", Date.now());
 
