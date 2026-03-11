@@ -832,6 +832,7 @@ justify-content:center;
     const SCRIPT_URL =
       "https://script.google.com/macros/s/AKfycbw6k_zAJQbu-y37sV0FYecQTc9F3Wo_SZ7IhteJrSWmLHhb50vYbYchGPlb_3WNWml9/exec";
     let semuaData = [];
+    let semuaBudget = [];
 
     const showLoading = (show = true) => {
       document.getElementById("loadingOverlay").style.display = show
@@ -945,6 +946,7 @@ justify-content:center;
       const res = await fetch(SCRIPT_URL);
       const data = await res.json();
       semuaData = data;
+      semuaBudget = data.budget
       renderDashboard();
       renderRiwayat(filter3HariTerakhir(data));
       showLoading(false);
@@ -1284,29 +1286,63 @@ justify-content:center;
   .replace(/\B(?=(\d{3})+(?!\d))/g,".")
 })
 
-    function setBudget(){
+async function setBudget(){
 
 let val=document.getElementById("budgetInput").value.replace(/\./g,"")
+
 if(!val) return
 
-localStorage.setItem("budgetBulanan",val)
+const now=new Date()
 
-updateBudget()
+await fetch(SCRIPT_URL,{
+method:"POST",
+mode:"no-cors",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({
+setBudget:true,
+bulan: now.getMonth()+1,
+tahun: now.getFullYear(),
+budget: val
+})
+})
 
-showToast("Budget berhasil disimpan","2000","success")
+showToast("Budget bulan ini tersimpan","2000","success")
+
+loadData()
 
 }
 
-    function updateBudget(){
+ function updateBudget(){
 
-let budget=parseInt(localStorage.getItem("budgetBulanan")||0)
+const now=new Date()
 
+const bulan=now.getMonth()+1
+const tahun=now.getFullYear()
+
+// ambil budget bulan ini
+let budget=0
+
+semuaBudget.forEach(b=>{
+if(b[0]==bulan && b[1]==tahun){
+budget=parseInt(b[2])
+}
+})
+
+// hitung pengeluaran bulan ini
 let pengeluaran=0
 
 semuaData.forEach(t=>{
-if(t.jenis==="Pengeluaran"){
+
+const d=new Date(t.tanggal)
+
+if(
+t.jenis==="Pengeluaran" &&
+d.getMonth()+1===bulan &&
+d.getFullYear()===tahun
+){
 pengeluaran+=parseInt(t.nominal)
 }
+
 })
 
 let persen = budget ? (pengeluaran/budget)*100 : 0
@@ -1317,6 +1353,7 @@ document.getElementById("budgetSisa").innerText =
 "Budget tersisa: "+formatRupiah(Math.max(sisa,0))
 
 const bar=document.getElementById("budgetBar")
+
 bar.style.width=Math.min(persen,100)+"%"
 
 const warning=document.getElementById("budgetWarning")
@@ -1324,7 +1361,7 @@ const warning=document.getElementById("budgetWarning")
 if(persen>=100){
 
 bar.style.background="#ef4444"
-warning.innerHTML="⚠ Budget sudah HABIS!"
+warning.innerHTML="⚠ Budget bulan ini HABIS"
 warning.className="budget-warning warning100"
 
 }
@@ -1338,19 +1375,19 @@ warning.className="budget-warning warning90"
 else if(persen>=80){
 
 bar.style.background="#fde047"
-warning.innerHTML="⚠ Budget sudah mencapai 80%"
+warning.innerHTML="⚠ Budget sudah 80%"
 warning.className="budget-warning warning80"
 
 }
 else{
 
 bar.style.background="#22c55e"
-warning.innerHTML="Budget masih aman"
+warning.innerHTML="Budget bulan ini aman"
 warning.className="budget-warning"
 
 }
 
-}
+} 
   </script>
 
   <button class="fab-add" onclick="openModal()">
