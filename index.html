@@ -1338,8 +1338,8 @@ const tahun=now.getFullYear()
 let budget=0
 
 semuaBudget.forEach(b=>{
-if(b.bulan==bulan && b.tahun==tahun){
-budget=parseInt(b.budget)
+if(b[0]==bulan && b[1]==tahun){
+budget=parseInt(b[2])
 }
 })
 
