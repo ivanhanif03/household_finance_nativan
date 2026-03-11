@@ -937,6 +937,7 @@ justify-content:center;
       setTimeout(() => showOverlayToast("✅ Transaksi berhasil!"), 200);
 
       loadData();
+      console.log(semuaData)
       kategoriEl.value = nominalEl.value = deskripsiEl.value = "";
       dompetDetailEl.value = "";
     }
@@ -947,8 +948,11 @@ justify-content:center;
 
   try {
 
-    const res = await fetch(SCRIPT_URL);
+    const res = await fetch(SCRIPT_URL + "?t=" + Date.now());
+
     const data = await res.json();
+
+    console.log("DATA API:", data);
 
     semuaData = data.transaksi || [];
     semuaBudget = data.budget || [];
@@ -1246,6 +1250,7 @@ justify-content:center;
       navigator.serviceWorker.register("sw.js");
 
     loadData();
+    console.log(semuaData)
     // setInterval(loadData, 30000);
 
     function openModal() {
@@ -1338,8 +1343,8 @@ const tahun=now.getFullYear()
 let budget=0
 
 semuaBudget.forEach(b=>{
-if(b[0]==bulan && b[1]==tahun){
-budget=parseInt(b[2])
+if(b.bulan==bulan && b.tahun==tahun){
+budget=parseInt(b.budget)
 }
 })
 
