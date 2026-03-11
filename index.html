@@ -955,6 +955,7 @@ justify-content:center;
     console.log("DATA API:", data);
 
     semuaData = data.transaksi || [];
+    console.log("SEMUA DATA:", semuaData)
     semuaBudget = data.budget || [];
 
     renderDashboard();
@@ -992,38 +993,51 @@ justify-content:center;
       renderRiwayat(filtered);
     }
 
-    function renderDashboard() {
-      let pendapatan = 0,
-        pengeluaran = 0,
-        cash = 0,
-        bank = 0,
-        wallet = 0;
-      semuaData.forEach((trx) => {
-        const n = Number(trx.nominal) || 0;
-        if (trx.jenis === "Pendapatan") {
-          pendapatan += n;
-          if (trx.dompet === "Cash") cash += n;
-          else if (trx.dompet === "M-Banking") bank += n;
-          else wallet += n;
-        } else {
-          pengeluaran += n;
-          if (trx.dompet === "Cash") cash -= n;
-          else if (trx.dompet === "M-Banking") bank -= n;
-          else wallet -= n;
-        }
-      });
-      document.getElementById("totalPendapatan").innerText =
-        formatRupiah(pendapatan);
-      document.getElementById("totalPengeluaran").innerText =
-        formatRupiah(pengeluaran);
-      document.getElementById("saldo").innerText = formatRupiah(
-        pendapatan - pengeluaran
-      );
-      document.getElementById("saldoCash").innerText = formatRupiah(cash);
-      document.getElementById("saldoBank").innerText = formatRupiah(bank);
-      document.getElementById("saldoWallet").innerText = formatRupiah(wallet);
-      updateBudget()
-    }
+   function renderDashboard(){
+
+let pendapatan = 0
+let pengeluaran = 0
+let cash = 0
+let bank = 0
+let wallet = 0
+
+semuaData.forEach(trx=>{
+
+const n = Number(trx.nominal) || 0
+const jenis = (trx.jenis || "").trim().toLowerCase()
+
+if(jenis === "pendapatan"){
+
+pendapatan += n
+
+if(trx.dompet === "Cash") cash += n
+else if(trx.dompet === "M-Banking") bank += n
+else wallet += n
+
+}
+else if(jenis === "pengeluaran"){
+
+pengeluaran += n
+
+if(trx.dompet === "Cash") cash -= n
+else if(trx.dompet === "M-Banking") bank -= n
+else wallet -= n
+
+}
+
+})
+
+document.getElementById("totalPendapatan").innerText = formatRupiah(pendapatan)
+document.getElementById("totalPengeluaran").innerText = formatRupiah(pengeluaran)
+document.getElementById("saldo").innerText = formatRupiah(pendapatan - pengeluaran)
+
+document.getElementById("saldoCash").innerText = formatRupiah(cash)
+document.getElementById("saldoBank").innerText = formatRupiah(bank)
+document.getElementById("saldoWallet").innerText = formatRupiah(wallet)
+
+updateBudget()
+
+}
 
     let detailOpen = null;
     const container = document.getElementById("detailSaldoContainer");
@@ -1356,11 +1370,11 @@ semuaData.forEach(t=>{
 const d=new Date(t.tanggal)
 
 if(
-t.jenis==="Pengeluaran" &&
+(t.jenis || "").toLowerCase() === "pengeluaran" &&
 d.getMonth()+1===bulan &&
 d.getFullYear()===tahun
 ){
-pengeluaran+=parseInt(t.nominal)
+pengeluaran += Number(t.nominal) || 0
 }
 
 })
