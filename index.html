@@ -999,7 +999,7 @@ justify-content:center;
         bank = 0,
         wallet = 0;
       semuaData.forEach((trx) => {
-        const n = parseInt(trx.nominal);
+        const n = Number(trx.nominal) || 0;
         if (trx.jenis === "Pendapatan") {
           pendapatan += n;
           if (trx.dompet === "Cash") cash += n;
