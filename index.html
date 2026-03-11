@@ -998,103 +998,91 @@ showLoading(false);
       renderRiwayat(filtered);
     }
 
-   function renderDashboard(){
+  function renderDashboard() {
+  let pendapatan = 0;
+  let pengeluaran = 0;
+  let cash = 0;
+  let bank = 0;
+  let wallet = 0;
 
-let pendapatan = 0;
-let pengeluaran = 0;
-let cash = 0;
-let bank = 0;
-let wallet = 0;
+  semuaData.forEach((trx) => {
+    // Pastikan nominal jadi angka
+    const n = Number(trx.nominal.toString().replace(/\./g, "")) || 0;
+    const jenis = String(trx.jenis || "").trim().toLowerCase();
+    const dompet = trx.dompet;
 
-semuaData.forEach(trx=>{
+    if (jenis === "pendapatan") {
+      pendapatan += n;
 
-const n = Number(trx.nominal) || 0;
-const jenis = String(trx.jenis || "").trim().toLowerCase();
-
-if(jenis==="pendapatan"){
-
-pendapatan += n;
-
-if(trx.dompet==="Cash") cash+=n;
-else if(trx.dompet==="M-Banking") bank+=n;
-else wallet+=n;
-
-}
-
-if(jenis==="pengeluaran"){
-
-pengeluaran += n;
-
-if(trx.dompet==="Cash") cash-=n;
-else if(trx.dompet==="M-Banking") bank-=n;
-else wallet-=n;
-
-}
-
-});
-
-document.getElementById("totalPendapatan").innerText = formatRupiah(pendapatan);
-document.getElementById("totalPengeluaran").innerText = formatRupiah(pengeluaran);
-document.getElementById("saldo").innerText = formatRupiah(pendapatan-pengeluaran);
-
-document.getElementById("saldoCash").innerText = formatRupiah(cash);
-document.getElementById("saldoBank").innerText = formatRupiah(bank);
-document.getElementById("saldoWallet").innerText = formatRupiah(wallet);
-
-updateBudget();
-
-}
-
-    let detailOpen = null;
-    const container = document.getElementById("detailSaldoContainer");
-
-    document.querySelectorAll(".sub-balance").forEach((card) => {
-      card.addEventListener("click", () => {
-        const tipe = card.textContent.includes("Cash")
-          ? "Cash"
-          : card.textContent.includes("M-Banking")
-            ? "M-Banking"
-            : "E-Wallet";
-        toggleDetail(tipe);
-      });
-    });
-
-    function toggleDetail(tipe) {
-      if (detailOpen === tipe) {
-        // tutup
-        container.style.height = "0";
-        detailOpen = null;
-      } else {
-        // isi detail
-        container.innerHTML = "";
-        const dataFiltered = semuaData.filter((t) => t.dompet === tipe);
-        if (dataFiltered.length === 0) {
-          container.innerHTML = `<p class="text-center">Tidak ada data untuk ${tipe}</p>`;
-        } else {
-          const summary = {};
-          dataFiltered.forEach((t) => {
-            const key = `${t.kepemilikan} - ${t.dompetDetail}`;
-            summary[key] =
-              (summary[key] || 0) +
-              (t.jenis === "Pendapatan"
-                ? parseInt(t.nominal)
-                : -parseInt(t.nominal));
-          });
-          Object.entries(summary).forEach(([k, v]) => {
-            const card = document.createElement("div");
-            card.className = "summary-card mb-2";
-            card.innerHTML = `<h6>${k}</h6><h3>${formatRupiah(v)}</h3>`;
-            container.appendChild(card);
-          });
-        }
-
-        // tampilkan slide down
-        container.style.display = "block";
-        const scrollH = container.scrollHeight;
-        container.style.height = scrollH + "px";
-        detailOpen = tipe;
-      }
+      if (dompet === "Cash") cash += n;
+      else if (dompet === "M-Banking") bank += n;
+      else wallet += n;
     }
+
+    if (jenis === "pengeluaran") {
+      pengeluaran += n;
+
+      if (dompet === "Cash") cash -= n;
+      else if (dompet === "M-Banking") bank -= n;
+      else wallet -= n;
+    }
+  });
+
+  document.getElementById("totalPendapatan").innerText = formatRupiah(pendapatan);
+  document.getElementById("totalPengeluaran").innerText = formatRupiah(pengeluaran);
+  document.getElementById("saldo").innerText = formatRupiah(pendapatan - pengeluaran);
+
+  document.getElementById("saldoCash").innerText = formatRupiah(cash);
+  document.getElementById("saldoBank").innerText = formatRupiah(bank);
+  document.getElementById("saldoWallet").innerText = formatRupiah(wallet);
+
+  updateBudget();
+}
+
+let detailOpen = null;
+const container = document.getElementById("detailSaldoContainer");
+
+function toggleDetail(tipe) {
+  if (detailOpen === tipe) {
+    // tutup
+    container.style.height = "0";
+    detailOpen = null;
+  } else {
+    // reset isi
+    container.innerHTML = "";
+
+    // filter data berdasarkan dompet
+    const dataFiltered = semuaData.filter((t) => t.dompet === tipe);
+
+    if (dataFiltered.length === 0) {
+      container.innerHTML = `<p class="text-center">Tidak ada data untuk ${tipe}</p>`;
+    } else {
+      const summary = {};
+
+      dataFiltered.forEach((t) => {
+        const key = `${t.kepemilikan} - ${t.dompetDetail}`;
+        const n = Number(t.nominal.toString().replace(/\./g, "")) || 0;
+        const jenis = String(t.jenis || "").trim().toLowerCase();
+
+        summary[key] =
+          (summary[key] || 0) + (jenis === "pendapatan" ? n : -n);
+      });
+
+      Object.entries(summary).forEach(([k, v]) => {
+        const card = document.createElement("div");
+        card.className = "summary-card mb-2";
+        card.innerHTML = `<h6>${k}</h6><h3>${formatRupiah(v)}</h3>`;
+        container.appendChild(card);
+      });
+    }
+
+    // tampilkan slide down
+    container.style.display = "block";
+    const scrollH = container.scrollHeight;
+    container.style.height = scrollH + "px";
+    detailOpen = tipe;
+  }
+}
 
     function renderRiwayat(data) {
       const container = document.getElementById("riwayatContainer");
