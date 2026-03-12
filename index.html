@@ -690,13 +690,13 @@ justify-content:center;
       <h5>Saldo Total</h5>
       <h2 id="saldo">Rp 0</h2>
       <div class="sub-balances">
-        <div class="sub-balance" onclick="tampilkanDetailSaldo('Cash')">
+        <div class="sub-balance" onclick="toggleDetail('Cash')">
           Cash<br /><span id="saldoCash">Rp 0</span>
         </div>
-        <div class="sub-balance" onclick="tampilkanDetailSaldo('M-Banking')">
+        <div class="sub-balance" onclick="toggleDetail('M-Banking')">
           M-Banking<br /><span id="saldoBank">Rp 0</span>
         </div>
-        <div class="sub-balance" onclick="tampilkanDetailSaldo('E-Wallet')">
+        <div class="sub-balance" onclick="toggleDetail('E-Wallet')">
           E-Wallet<br /><span id="saldoWallet">Rp 0</span>
         </div>
       </div>
@@ -943,39 +943,39 @@ justify-content:center;
 
 async function loadData(){
 
-showLoading(true);
+showLoading(true)
 
 try{
 
-const res = await fetch(SCRIPT_URL + "?v=" + new Date().getTime(),{
+const res = await fetch(SCRIPT_URL + "?t=" + Date.now(),{
 method:"GET",
 cache:"no-store"
-});
+})
 
 if(!res.ok){
-throw new Error("HTTP error " + res.status);
+throw new Error("HTTP ERROR "+res.status)
 }
 
-const data = await res.json();
+const data = await res.json()
 
-console.log("API:",data);
+console.log("API RESPONSE:",data)
 
-semuaData = data.transaksi || [];
-semuaBudget = data.budget || [];
+semuaData = data.transaksi || []
+semuaBudget = data.budget || []
 
-console.log("DATA TRANSAKSI:",semuaData);
+console.log("TOTAL TRANSAKSI:", semuaData.length)
 
-renderDashboard();
-renderRiwayat(filter3HariTerakhir(semuaData));
+renderDashboard()
+renderRiwayat(filter3HariTerakhir(semuaData))
 
 }catch(err){
 
-console.error("ERROR LOAD DATA:",err);
-showToast("Gagal mengambil data dari Google Sheet",3000,"error");
+console.error("FETCH ERROR:",err)
+showToast("Gagal mengambil data dari Google Sheet",3000,"error")
 
 }
 
-showLoading(false);
+showLoading(false)
 
 }
 
