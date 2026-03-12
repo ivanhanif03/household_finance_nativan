@@ -941,7 +941,7 @@ justify-content:center;
       dompetDetailEl.value = "";
     }
 
-   async function loadData(){
+async function loadData(){
 
 showLoading(true);
 
@@ -952,8 +952,11 @@ method:"GET",
 cache:"no-store"
 });
 
-const text = await res.text();
-const data = JSON.parse(text);
+if(!res.ok){
+throw new Error("HTTP error " + res.status);
+}
+
+const data = await res.json();
 
 console.log("API:",data);
 
