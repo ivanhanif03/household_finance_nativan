@@ -1351,17 +1351,21 @@ if(!val) return
 
 const now=new Date()
 
-await fetch(SCRIPT_URL,{
-method:"POST",
-mode:"no-cors",
-headers:{ "Content-Type":"application/json" },
-body:JSON.stringify({
-setBudget:true,
-bulan: now.getMonth()+1,
-tahun: now.getFullYear(),
-budget: val
+await fetch(SCRIPT_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    setBudget: true,
+    bulan: now.getMonth() + 1,
+    tahun: now.getFullYear(),
+    budget: val
+  })
 })
-})
+.then(res => res.text())
+.then(res => console.log("RESP:", res))
+.catch(err => console.error("ERROR:", err))
 
 showToast("Budget bulan ini tersimpan","2000","success")
 
