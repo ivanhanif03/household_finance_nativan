@@ -733,9 +733,9 @@ justify-content:center;
 
 <div id="budgetWarning" class="budget-warning"></div>
 
-<div class="budget-input">
+<div class="budget-input" id="budgetInputContainer">
 <input type="text" id="budgetInput" placeholder="Set budget bulanan">
-<button onclick="setBudget()">Set</button>
+<button id="btnBudget" onclick="setBudget()">Set</button>
 </div>
 
 <small>Budget akan otomatis terakumulasi dari sisa bulan sebelumnya</small>
@@ -971,6 +971,7 @@ if (Array.isArray(data)) {
 
 console.log("DATA FINAL:", semuaData)
 
+  handleBudgetUI()
 renderDashboard()
 renderRiwayat(filter3HariTerakhir(semuaData))
 
@@ -1347,27 +1348,39 @@ async function setBudget(){
 
 let val=document.getElementById("budgetInput").value.replace(/\./g,"")
 
-if(!val) return
+if(!val) return showToast("Isi budget dulu!")
 
 const now=new Date()
 
-await fetch(SCRIPT_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    setBudget: true,
-    bulan: now.getMonth() + 1,
-    tahun: now.getFullYear(),
-    budget: val
-  })
-})
-.then(res => res.text())
-.then(res => console.log("RESP:", res))
-.catch(err => console.error("ERROR:", err))
+showLoading(true)
 
-showToast("Budget bulan ini tersimpan","2000","success")
+try{
+
+const res = await fetch(SCRIPT_URL,{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({
+setBudget:true,
+bulan: now.getMonth()+1,
+tahun: now.getFullYear(),
+budget: val
+})
+})
+
+const txt = await res.text()
+
+console.log("RESP:",txt)
+
+showToast("Budget berhasil disimpan","2000","success")
+
+}catch(err){
+
+console.error(err)
+showToast("Gagal simpan budget","2000","error")
+
+}
+
+showLoading(false)
 
 loadData()
 
@@ -1390,21 +1403,13 @@ budget=parseInt(b.budget)
 })
 
 // hitung pengeluaran bulan ini
-let pengeluaran=0
+let pengeluaran = 0
 
-semuaData.forEach(t=>{
+const current = semuaBudget.find(b => b.bulan==bulan && b.tahun==tahun)
 
-const d=new Date(t.tanggal)
-
-if(
-(t.jenis || "").toLowerCase() === "pengeluaran" &&
-d.getMonth()+1===bulan &&
-d.getFullYear()===tahun
-){
-pengeluaran += Number(t.nominal) || 0
+if(current){
+pengeluaran = Number(current.realisasi) || 0
 }
-
-})
 
 let persen = budget ? (pengeluaran/budget)*100 : 0
 
@@ -1449,6 +1454,29 @@ warning.className="budget-warning"
 }
 
 } 
+
+    function handleBudgetUI(){
+
+const now = new Date()
+const bulan = now.getMonth()+1
+const tahun = now.getFullYear()
+
+let existing = semuaBudget.find(b => b.bulan==bulan && b.tahun==tahun)
+
+const input = document.getElementById("budgetInput")
+const btn = document.getElementById("btnBudget")
+
+if(existing){
+
+input.value = formatRupiah(existing.budget).replace("Rp ","")
+btn.innerText = "Edit"
+}else{
+
+input.value = ""
+btn.innerText = "Set"
+}
+
+}
   </script>
 
   <button class="fab-add" onclick="openModal()">
