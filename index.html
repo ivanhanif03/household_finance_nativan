@@ -958,12 +958,18 @@ throw new Error("HTTP ERROR "+res.status)
 
 const data = await res.json()
 
-console.log("API RESPONSE:",data)
+console.log("RAW API:", data)
 
-semuaData = data.transaksi || []
-semuaBudget = data.budget || []
+// HANDLE semua kemungkinan bentuk response
+if (Array.isArray(data)) {
+  semuaData = data
+  semuaBudget = []
+} else {
+  semuaData = data.transaksi || []
+  semuaBudget = data.budget || []
+}
 
-console.log("TOTAL TRANSAKSI:", semuaData.length)
+console.log("DATA FINAL:", semuaData)
 
 renderDashboard()
 renderRiwayat(filter3HariTerakhir(semuaData))
