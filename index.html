@@ -1355,22 +1355,31 @@ const now = new Date()
 
 showLoading(true)
 
+try{
+
 await fetch(SCRIPT_URL, {
   method: "POST",
+  mode: "no-cors", // ✅ WAJIB
   headers: {
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-    action: "setBudget", // ✅ PENANDA WAJIB
+    action: "setBudget",
     bulan: now.getMonth() + 1,
     tahun: now.getFullYear(),
     budget: val
   })
 })
 
-showLoading(false)
-
 showOverlayToast("✅ Budget tersimpan")
+
+}catch(err){
+
+showToast("Gagal simpan budget",3000,"error")
+
+}
+
+showLoading(false) // ✅ PASTIKAN DI LUAR TRY
 
 loadData()
 }
