@@ -919,6 +919,7 @@ justify-content:center;
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "addTransaksi", // ✅ WAJIB
           jenis,
           kategori,
           nominal,
@@ -1348,7 +1349,7 @@ async function setBudget(){
 
 let val = document.getElementById("budgetInput").value.replace(/\./g,"")
 
-if(!val) return
+if(!val) return showToast("Isi budget dulu!",3000,"error")
 
 const now = new Date()
 
@@ -1356,12 +1357,11 @@ showLoading(true)
 
 await fetch(SCRIPT_URL, {
   method: "POST",
-  mode: "no-cors", // ✅ WAJIB DITAMBAHKAN
   headers: {
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
-    setBudget: true,
+    action: "setBudget", // ✅ PENANDA WAJIB
     bulan: now.getMonth() + 1,
     tahun: now.getFullYear(),
     budget: val
