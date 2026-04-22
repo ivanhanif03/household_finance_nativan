@@ -1353,40 +1353,31 @@ if(!val) return showToast("Isi budget dulu!",3000,"error")
 
 const now = new Date()
 
-// ❗ VALIDASI BIAR GA DOUBLE SET
-const exist = semuaBudget.find(b => 
-  b.bulan == (now.getMonth()+1) &&
-  b.tahun == now.getFullYear()
-)
-
 showLoading(true)
 
 try{
 
+const formData = new URLSearchParams()
+formData.append("action","setBudget")
+formData.append("bulan", now.getMonth()+1)
+formData.append("tahun", now.getFullYear())
+formData.append("budget", val)
+
 await fetch(SCRIPT_URL, {
   method: "POST",
-  mode: "cors",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    action: "setBudget",
-
-    bulan: now.getMonth()+1,
-    tahun: now.getFullYear(),
-    budget: val
-  
-  })
+  body: formData
 })
 
-showOverlayToast(exist ? "✅ Budget diupdate" : "✅ Budget dibuat")
+showOverlayToast("✅ Budget tersimpan")
 
 }catch(err){
 
+console.error(err)
 showToast("Gagal simpan budget",3000,"error")
 
 }
 
 showLoading(false)
-
 loadData()
 }
 
