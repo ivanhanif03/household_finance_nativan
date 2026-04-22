@@ -742,72 +742,6 @@ justify-content:center;
 
 </div>
 
-    <!-- <div class="form-card">
-        <h5 class="fw-bold mb-3 text-center" style="color: #04215f">
-          Tambah Transaksi
-        </h5>
-        <div class="mb-3">
-          <label class="form-label">Jenis</label>
-          <select id="jenis" class="form-select">
-            <option value="Pendapatan">Pendapatan</option>
-            <option value="Pengeluaran">Pengeluaran</option>
-          </select>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Kategori</label
-          ><input
-            type="text"
-            id="kategori"
-            class="form-control"
-            placeholder="Contoh: Gaji, Makan, Transport"
-          />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Nominal</label
-          ><input
-            type="text"
-            id="nominal"
-            class="form-control"
-            placeholder="Contoh: 1.500.000"
-          />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Deskripsi</label
-          ><input
-            type="text"
-            id="deskripsi"
-            class="form-control"
-            placeholder="Keterangan tambahan"
-          />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Kepemilikan</label>
-          <select id="kepemilikan" class="form-select">
-            <option value="Ayah">Ayah</option>
-            <option value="Ibun">Ibun</option>
-            <option value="Izora">Izora</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Dompet</label>
-          <select id="dompet" class="form-select">
-            <option value="Cash">Cash</option>
-            <option value="M-Banking">M-Banking</option>
-            <option value="E-Wallet">E-Wallet</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Detail Dompet</label>
-          <select id="dompetDetail" class="form-select">
-            <option value="">-- Pilih --</option>
-          </select>
-        </div>
-        <button class="btn btn-blue" onclick="simpanTransaksi()">Simpan</button>
-        <div id="notif" class="mt-3 fw-semibold"></div>
-      </div> -->
-
     <div class="riwayat-title">📜 Riwayat Transaksi</div>
 
     <div class="filter-export">
@@ -916,7 +850,7 @@ justify-content:center;
 
       await fetch(SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors",
+        mode: "cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "addTransaksi", // ✅ WAJIB
@@ -1365,7 +1299,12 @@ formData.append("budget", val)
 
 await fetch(SCRIPT_URL, {
   method: "POST",
-  body: formData
+  body: new URLSearchParams({
+    action: "setBudget",
+    bulan: now.getMonth() + 1,
+    tahun: now.getFullYear(),
+    budget: val
+  })
 })
 
 showOverlayToast("✅ Budget tersimpan")
