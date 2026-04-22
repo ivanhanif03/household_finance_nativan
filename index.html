@@ -1291,17 +1291,14 @@ showLoading(true)
 
 try{
 
-const formData = new URLSearchParams()
-formData.append("action","setBudget")
-formData.append("bulan", now.getMonth()+1)
-formData.append("tahun", now.getFullYear())
-formData.append("budget", val)
-
 await fetch(SCRIPT_URL, {
   method: "POST",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded"
+  },
   body: new URLSearchParams({
     action: "setBudget",
-    bulan: now.getMonth() + 1,
+    bulan: now.getMonth()+1,
     tahun: now.getFullYear(),
     budget: val
   })
@@ -1310,10 +1307,8 @@ await fetch(SCRIPT_URL, {
 showOverlayToast("✅ Budget tersimpan")
 
 }catch(err){
-
 console.error(err)
 showToast("Gagal simpan budget",3000,"error")
-
 }
 
 showLoading(false)
