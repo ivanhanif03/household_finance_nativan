@@ -11,7 +11,7 @@ const APP_PASSWORD = "nativan300424";
 // VAPID public key for push notifications
 // Ganti dengan VAPID key milikmu (generate via web-push library)
 // Bisa generate di: https://vapidkeys.com/
-const VAPID_PUBLIC_KEY = "BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBfC7PCjnXR3UjN2bG4kEMXLpkQ";
+const VAPID_PUBLIC_KEY = "BErGKTEywRWYXJrrWV8gChZ4gBRV_5CjUhoqLZ1p6RcrvL4TV-8eGmSVaR8HLt5NlskPzPwiBcSlYw1N7D9W_Vw";
 
 // ─────────────────────────────────────────────────
 // STATE
