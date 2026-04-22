@@ -45,7 +45,22 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════
-       LOADING OVERLAY
+       SPLASH LOADING SCREEN (muncul setelah login)
+  ═══════════════════════════════════════════════ -->
+  <div id="splashScreen">
+    <div class="splash-content">
+      <div class="splash-logo">🏠</div>
+      <h2 class="splash-title">Keuangan Nativan</h2>
+      <p class="splash-subtitle" id="splashStatus">Menghubungkan ke server...</p>
+      <div class="splash-progress-wrap">
+        <div class="splash-progress-bar" id="splashBar"></div>
+      </div>
+      <p class="splash-pct" id="splashPct">0%</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       LOADING OVERLAY (untuk aksi simpan/set budget)
   ═══════════════════════════════════════════════ -->
   <div id="loadingOverlay">
     <div class="spinner"></div>
