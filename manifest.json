@@ -1,14 +1,13 @@
+
 {
-  "name": "Keuangan Rumah Tangga Nativan",
-  "short_name": "Nativan Finance",
-  "description": "Aplikasi pengelolaan keuangan rumah tangga keluarga Nativan",
+  "name": "Keuangan Nativan",
+  "short_name": "Nativan",
+  "description": "Aplikasi Keuangan Rumah Tangga Nativan",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#f4f7ff",
   "theme_color": "#2563eb",
-  "gcm_sender_id": "571922806432",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "https://img.icons8.com/bubbles/192/cash.png",
@@ -22,5 +21,7 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "categories": ["finance", "utilities"],
+  "lang": "id"
 }
