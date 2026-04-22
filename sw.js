@@ -1,99 +1,155 @@
-const CACHE_NAME = "nativan-finance-v3"; // update versi jika ada perubahan besar
+/* =====================================================
+   KEUANGAN NATIVAN — sw.js (Service Worker)
+   Versi dengan Push Notification support
+   ===================================================== */
 
-const ASSETS = [
+const CACHE_NAME = "nativan-finance-v3";
+
+// File yang di-cache untuk offline
+const CACHE_FILES = [
   "./",
   "./index.html",
+  "./style.css",
+  "./app.js",
   "./manifest.json",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
-
-  // CDN
-  "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+  "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css",
+  "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
 ];
 
-
-// INSTALL
-self.addEventListener("install", (event) => {
+// ─── Install: cache semua aset ───
+self.addEventListener("install", event => {
+  console.log("[SW] Installing...");
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(CACHE_FILES))
+      .then(() => self.skipWaiting())
+      .catch(err => console.warn("[SW] Cache addAll error:", err))
   );
-
-  // langsung aktif tanpa menunggu SW lama
-  self.skipWaiting();
 });
 
-
-// ACTIVATE
-self.addEventListener("activate", (event) => {
+// ─── Activate: hapus cache lama ───
+self.addEventListener("activate", event => {
+  console.log("[SW] Activating...");
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
+    caches.keys().then(keys =>
+      Promise.all(
         keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      );
-    })
+          .filter(k => k !== CACHE_NAME)
+          .map(k => {
+            console.log("[SW] Deleting old cache:", k);
+            return caches.delete(k);
+          })
+      )
+    ).then(() => self.clients.claim())
   );
-
-  self.clients.claim();
 });
 
+// ─── Fetch: Network-first untuk GAS, Cache-first untuk aset ───
+self.addEventListener("fetch", event => {
+  const url = event.request.url;
 
-// FETCH
-self.addEventListener("fetch", (event) => {
-  const req = event.request;
-
-  // hanya handle GET request
-  if (req.method !== "GET") return;
-
-  // ===== HTML (Network First) =====
-  if (req.mode === "navigate" || req.headers.get("accept").includes("text/html")) {
+  // GAS API: selalu dari network
+  if (url.includes("script.google.com")) {
     event.respondWith(
-      fetch(req)
-        .then((networkRes) => {
-
-          const clone = networkRes.clone();
-
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(req, clone);
-          });
-
-          return networkRes;
+      fetch(event.request).catch(() =>
+        new Response(JSON.stringify({ status: "ERROR", message: "Offline" }), {
+          headers: { "Content-Type": "application/json" }
         })
-        .catch(() => {
-          return caches.match(req).then((res) => {
-            return res || caches.match("./index.html");
-          });
-        })
+      )
     );
+    return;
   }
 
-  // ===== Asset (Cache First) =====
-  else {
-
-    event.respondWith(
-      caches.match(req).then((cacheRes) => {
-
-        if (cacheRes) return cacheRes;
-
-        return fetch(req).then((networkRes) => {
-
-          const clone = networkRes.clone();
-
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(req, clone);
-          });
-
-          return networkRes;
-
-        }).catch(() => {
+  // Aset lokal: cache-first
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).then(response => {
+        // Simpan response baru ke cache
+        if (response && response.status === 200 && response.type === "basic") {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return response;
+      }).catch(() => {
+        // Fallback offline page
+        if (event.request.mode === "navigate") {
           return caches.match("./index.html");
-        });
+        }
+      });
+    })
+  );
+});
 
-      })
-    );
+// ─── Push Notification ───
+// Dipanggil ketika server mengirim push event
+self.addEventListener("push", event => {
+  console.log("[SW] Push received");
 
+  let data = { title: "Keuangan Nativan", body: "Ada notifikasi baru" };
+
+  try {
+    if (event.data) {
+      data = event.data.json();
+    }
+  } catch (_) {
+    data.body = event.data ? event.data.text() : "Ada notifikasi baru";
+  }
+
+  const options = {
+    body:    data.body || "Ada notifikasi baru",
+    icon:    "./assets/icons/icon-192.png",
+    badge:   "./assets/icons/icon-192.png",
+    vibrate: [200, 100, 200, 100, 200],
+    tag:     data.tag || "nativan-push",
+    data:    { url: data.url || self.registration.scope },
+    actions: [
+      { action: "open",    title: "Buka App" },
+      { action: "dismiss", title: "Tutup"    }
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || "Keuangan Nativan", options)
+  );
+});
+
+// ─── Notification Click ───
+self.addEventListener("notificationclick", event => {
+  console.log("[SW] Notification clicked:", event.action);
+  event.notification.close();
+
+  if (event.action === "dismiss") return;
+
+  const targetUrl = event.notification.data?.url || self.registration.scope;
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(clientList => {
+      // Jika app sudah terbuka, fokus ke sana
+      for (const client of clientList) {
+        if (client.url === targetUrl && "focus" in client) {
+          return client.focus();
+        }
+      }
+      // Buka tab baru
+      if (clients.openWindow) return clients.openWindow(targetUrl);
+    })
+  );
+});
+
+// ─── Background Sync (opsional, untuk offline queue) ───
+self.addEventListener("sync", event => {
+  if (event.tag === "sync-transactions") {
+    console.log("[SW] Background sync: sync-transactions");
+    // TODO: implementasi antrian transaksi offline
+  }
+});
+
+// ─── Message dari client ───
+self.addEventListener("message", event => {
+  if (event.data === "skipWaiting") {
+    self.skipWaiting();
   }
 });
