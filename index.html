@@ -16,9 +16,7 @@
   <meta name="theme-color" content="#2563eb" />
 
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#0850d6" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -35,7 +33,6 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", sans-serif;
-
       background: linear-gradient(180deg, #f4f7ff, #f8fafc);
       color: var(--text);
       min-height: 100vh;
@@ -43,9 +40,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    .container {
-      max-width: 680px;
-    }
+    .container { max-width: 680px; }
 
     .title {
       font-weight: 700;
@@ -62,10 +57,7 @@
       padding: 26px;
       text-align: center;
       color: white;
-
-      box-shadow:
-        0 20px 40px rgba(37, 99, 235, .35);
-
+      box-shadow: 0 20px 40px rgba(37, 99, 235, .35);
       position: relative;
       overflow: hidden;
     }
@@ -73,29 +65,18 @@
     .balance::after {
       content: "";
       position: absolute;
-
       width: 200px;
       height: 200px;
-
       background: rgba(255, 255, 255, .15);
-
       border-radius: 50%;
-
       top: -80px;
       right: -60px;
-
       filter: blur(20px);
     }
 
-    .balance h2 {
-      font-weight: 700;
-    }
+    .balance h2 { font-weight: 700; }
 
-    .sub-balances {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
+    .sub-balances { display: flex; gap: 10px; margin-top: 15px; }
 
     .sub-balance {
       flex: 1;
@@ -121,34 +102,16 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
     }
 
-    .summary-card h6 {
-      font-size: .8rem;
-      color: var(--muted);
-      margin-bottom: 5px;
-    }
+    .summary-card h6 { font-size: .8rem; color: var(--muted); margin-bottom: 5px; }
+    .summary-card h3 { font-size: 1.15rem; font-weight: 700; }
 
-    .summary-card h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
-    }
-
-    .form-card {
-      background: white;
-      border-radius: 20px;
-      padding: 20px;
-      margin-top: 22px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
-    }
-
-    .form-control,
-    .form-select {
+    .form-control, .form-select {
       border-radius: 12px;
       border: 1px solid #e5e7eb;
       font-size: .9rem;
     }
 
-    .form-control:focus,
-    .form-select:focus {
+    .form-control:focus, .form-select:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 2px var(--primary-soft);
     }
@@ -163,10 +126,7 @@
       transition: .15s;
     }
 
-    .btn-blue:hover {
-      background: #1d4ed8;
-      transform: translateY(-1px);
-    }
+    .btn-blue:hover { background: #1d4ed8; transform: translateY(-1px); }
 
     .riwayat-title {
       font-weight: 600;
@@ -196,11 +156,7 @@
       font-size: .9rem;
     }
 
-    #filter:focus {
-      outline: none;
-      background: white;
-      box-shadow: 0 0 0 2px var(--primary-soft);
-    }
+    #filter:focus { outline: none; background: white; box-shadow: 0 0 0 2px var(--primary-soft); }
 
     .btn-export {
       background: var(--success);
@@ -211,13 +167,9 @@
       font-size: .85rem;
     }
 
-    .btn-export:hover {
-      transform: translateY(-1px);
-    }
+    .btn-export:hover { transform: translateY(-1px); }
 
-    .tanggal-filter {
-      margin-top: 12px;
-    }
+    .tanggal-filter { margin-top: 12px; }
 
     .tanggal-filter input {
       border-radius: 10px;
@@ -234,26 +186,19 @@
       border-radius: 10px;
     }
 
-    .riwayat-container {
-      margin-top: 18px;
-    }
+    .riwayat-container { margin-top: 18px; }
 
     .trx-card {
       background: white;
       border-radius: 18px;
       padding: 14px 16px;
       margin-bottom: 12px;
-
-      box-shadow:
-        0 8px 20px rgba(0, 0, 0, .06);
-
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .06);
       transition: .25s;
+      animation: fadeUp .35s ease;
     }
 
-    .trx-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
-    }
+    .trx-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0, 0, 0, .12); }
 
     .trx-header {
       display: flex;
@@ -262,47 +207,19 @@
       padding-bottom: 3px;
     }
 
-    .trx-header h6 {
-      font-size: .85rem;
-      font-weight: 600;
-      color: var(--primary);
-    }
+    .trx-header h6 { font-size: .85rem; font-weight: 600; color: var(--primary); }
+    .trx-date { font-size: .75rem; color: var(--muted); }
 
-    .trx-date {
-      font-size: .75rem;
-      color: var(--muted);
-    }
-
-    .trx-detail {
-      font-size: .82rem;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .trx-nominal {
-      font-weight: 700;
-    }
-
-    .trx-nominal.pendapatan {
-      color: var(--success);
-    }
-
-    .trx-nominal.pengeluaran {
-      color: var(--danger);
-    }
-
-    .trx-deskripsi {
-      font-size: .78rem;
-      color: var(--muted);
-      font-style: italic;
-    }
+    .trx-detail { font-size: .82rem; display: flex; justify-content: space-between; }
+    .trx-nominal { font-weight: 700; }
+    .trx-nominal.pendapatan { color: var(--success); }
+    .trx-nominal.pengeluaran { color: var(--danger); }
+    .trx-deskripsi { font-size: .78rem; color: var(--muted); font-style: italic; }
 
     #loadingOverlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: rgba(255, 255, 255, .7);
       backdrop-filter: blur(3px);
       display: none;
@@ -315,15 +232,13 @@
       border: 4px solid #e5e7eb;
       border-top: 4px solid var(--primary);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 40px; height: 40px;
       animation: spin .7s linear infinite;
     }
 
     .toast {
       position: fixed;
-      top: 20px;
-      left: 50%;
+      top: 20px; left: 50%;
       transform: translateX(-50%);
       background: #ef4444;
       color: white;
@@ -335,14 +250,11 @@
       transition: .3s;
     }
 
-    .toast.show {
-      opacity: 1;
-    }
+    .toast.show { opacity: 1; }
 
     #overlayToast {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%) scale(.8);
       background: var(--success);
       color: white;
@@ -352,108 +264,37 @@
       transition: .3s;
     }
 
-    #overlayToast.show {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
+    #overlayToast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
-    @keyframes spin {
-      from {
-        transform: rotate(0deg);
-      }
-
-      to {
-        transform: rotate(360deg);
-      }
-    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
     @media(max-width:500px) {
-
-      .filter-export {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .btn-export {
-        width: 100%;
-      }
-
-      .trx-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
+      .filter-export { flex-direction: column; align-items: stretch; }
+      .btn-export { width: 100%; }
+      .trx-header { flex-direction: column; align-items: flex-start; }
     }
 
     .fab-add {
       position: fixed;
-      bottom: 25px;
-      right: 20px;
-
-      width: 60px;
-      height: 60px;
-
+      bottom: 25px; right: 20px;
+      width: 60px; height: 60px;
       border: none;
       border-radius: 20px;
-
       background: linear-gradient(135deg, #2563eb, #4f46e5);
       color: white;
-
       font-size: 30px;
-
-      box-shadow:
-        0 15px 30px rgba(37, 99, 235, .35);
-
+      box-shadow: 0 15px 30px rgba(37, 99, 235, .35);
       cursor: pointer;
       transition: .2s;
       z-index: 999;
     }
 
-    .fab-add:hover {
-      transform: scale(1.08);
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-
-      background: rgba(255, 255, 255, .7);
-      backdrop-filter: blur(16px);
-
-      border-top: 1px solid rgba(255, 255, 255, .4);
-
-      display: flex;
-      justify-content: space-around;
-
-      padding: 10px 0;
-
-      box-shadow: 0 -3px 12px rgba(0, 0, 0, .05);
-    }
-
-    .bottom-nav button {
-      background: none;
-      border: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 18px;
-      color: #555;
-      font-weight: 500;
-    }
-
-    .bottom-nav span {
-      font-size: .65rem;
-      margin-top: 2px;
-    }
-
-    /* iOS Modal Style */
+    .fab-add:hover { transform: scale(1.08); }
 
     .modal-ios {
       position: fixed;
-      bottom: -100%;
-      left: 0;
+      bottom: -100%; left: 0;
       width: 100%;
       background: white;
       border-radius: 22px 22px 0 0;
@@ -465,16 +306,12 @@
       overflow-y: auto;
     }
 
-    .modal-ios.show {
-      bottom: 0;
-    }
+    .modal-ios.show { bottom: 0; }
 
     .modal-backdrop-ios {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: rgba(0, 0, 0, .35);
       backdrop-filter: blur(3px);
       opacity: 0;
@@ -483,96 +320,69 @@
       z-index: 999;
     }
 
-    .modal-backdrop-ios.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .modal-backdrop-ios.show { opacity: 1; pointer-events: auto; }
 
     .modal-handle {
-      width: 40px;
-      height: 5px;
+      width: 40px; height: 5px;
       background: #d1d5db;
       border-radius: 5px;
       margin: 0 auto 15px;
     }
 
-    * {
-      transition: all .2s ease;
+    .budget-card {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border-radius: 20px;
+      padding: 18px;
+      color: white;
+      box-shadow: 0 10px 25px rgba(0,0,0,.1);
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .trx-card {
-      animation: fadeUp .35s ease;
+    .budget-progress {
+      height: 10px;
+      background: rgba(255,255,255,.25);
+      border-radius: 10px;
+      margin-top: 10px;
     }
 
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(15px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .budget-bar {
+      height: 100%;
+      border-radius: 10px;
+      width: 0%;
+      background: #22c55e;
+      transition: width .4s ease;
     }
 
-    .budget-card{
-  background: linear-gradient(135deg,#22c55e,#16a34a);
-  border-radius:20px;
-  padding:18px;
-  color:white;
-  box-shadow:0 10px 25px rgba(0,0,0,.1);
-  margin-bottom:16px;
-  position:relative;
-  overflow:hidden;
-}
+    .budget-warning { font-size: .8rem; margin-top: 6px; font-weight: 600; }
+    .warning80 { color: #fde047; }
+    .warning90 { color: #fb923c; }
+    .warning100 { color: #ef4444; }
 
-.budget-progress{
-  height:10px;
-  background:rgba(255,255,255,.25);
-  border-radius:10px;
-  margin-top:10px;
-}
+    .budget-input { display: flex; gap: 8px; margin-top: 10px; }
 
-.budget-bar{
-  height:100%;
-  border-radius:10px;
-  width:0%;
-  background:#22c55e;
-  transition:width .4s ease;
-}
+    .budget-input input {
+      flex: 1;
+      border-radius: 10px;
+      border: none;
+      padding: 6px 10px;
+    }
 
-.budget-warning{
-  font-size:.8rem;
-  margin-top:6px;
-  font-weight:600;
-}
+    .budget-input button {
+      border: none;
+      background: white;
+      color: #16a34a;
+      font-weight: 600;
+      border-radius: 10px;
+      padding: 6px 12px;
+    }
 
-.warning80{color:#fde047;}
-.warning90{color:#fb923c;}
-.warning100{color:#ef4444;}
-
-.budget-input{
-  display:flex;
-  gap:8px;
-  margin-top:10px;
-}
-
-.budget-input input{
-  flex:1;
-  border-radius:10px;
-  border:none;
-  padding:6px 10px;
-}
-
-.budget-input button{
-  border:none;
-  background:white;
-  color:#16a34a;
-  font-weight:600;
-  border-radius:10px;
-  padding:6px 12px;
-}
+    /* ✅ Disable state untuk tombol saat loading */
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 
@@ -580,35 +390,18 @@
 
   <!-- LOGIN SCREEN -->
   <div id="loginScreen" style="
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:white;
-z-index:10000;
-display:flex;
-align-items:center;
-justify-content:center;
-">
-
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:white; z-index:10000;
+    display:flex; align-items:center; justify-content:center;">
     <div style="width:90%;max-width:320px;text-align:center">
-
-      <h3 style="color:#2563eb;font-weight:700;margin-bottom:20px">
-        🔐 Keuangan Nativan
-      </h3>
-
+      <h3 style="color:#2563eb;font-weight:700;margin-bottom:20px">🔐 Keuangan Nativan</h3>
       <input type="password" id="passwordInput" class="form-control mb-3" placeholder="Masukkan Password">
-
-      <button class="btn btn-blue w-100" onclick="checkPassword()">
-        Masuk
-      </button>
-
+      <button class="btn btn-blue w-100" onclick="checkPassword()">Masuk</button>
       <div id="loginError" style="color:red;margin-top:10px"></div>
-
     </div>
   </div>
-  <!-- 🔄 Loading overlay -->
+
+  <!-- Loading overlay -->
   <div id="loadingOverlay">
     <div class="spinner"></div>
     <div id="overlayToast">
@@ -620,12 +413,8 @@ justify-content:center;
     <div id="modalBackdrop" class="modal-backdrop-ios" onclick="closeModal()"></div>
 
     <div id="modalTambah" class="modal-ios">
-
       <div class="modal-handle"></div>
-
-      <h5 class="fw-bold mb-3 text-center" style="color:#04215f">
-        Tambah Transaksi
-      </h5>
+      <h5 class="fw-bold mb-3 text-center" style="color:#04215f">Tambah Transaksi</h5>
 
       <div class="mb-3">
         <label class="form-label">Jenis</label>
@@ -675,34 +464,22 @@ justify-content:center;
         </select>
       </div>
 
-      <button class="btn btn-blue w-100" onclick="simpanTransaksi()">
-        Simpan
-      </button>
-
+      <button id="btnSimpan" class="btn btn-blue w-100" onclick="simpanTransaksi()">Simpan</button>
       <div id="notif" class="mt-3 fw-semibold text-center"></div>
-
     </div>
-    <!-- Toast Notification -->
-    <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999"></div>
 
+    <div id="toastContainer" style="position:fixed;top:20px;right:20px;z-index:9999"></div>
 
     <div class="balance mb-3 mt-3">
       <h5>Saldo Total</h5>
       <h2 id="saldo">Rp 0</h2>
       <div class="sub-balances">
-        <div class="sub-balance" onclick="toggleDetail('Cash')">
-          Cash<br /><span id="saldoCash">Rp 0</span>
-        </div>
-        <div class="sub-balance" onclick="toggleDetail('M-Banking')">
-          M-Banking<br /><span id="saldoBank">Rp 0</span>
-        </div>
-        <div class="sub-balance" onclick="toggleDetail('E-Wallet')">
-          E-Wallet<br /><span id="saldoWallet">Rp 0</span>
-        </div>
+        <div class="sub-balance" onclick="toggleDetail('Cash')">Cash<br /><span id="saldoCash">Rp 0</span></div>
+        <div class="sub-balance" onclick="toggleDetail('M-Banking')">M-Banking<br /><span id="saldoBank">Rp 0</span></div>
+        <div class="sub-balance" onclick="toggleDetail('E-Wallet')">E-Wallet<br /><span id="saldoWallet">Rp 0</span></div>
       </div>
-
       <div class="detail-wrapper mt-3">
-        <div id="detailSaldoContainer" style="overflow: hidden; height: 0; transition: height 0.4s ease"></div>
+        <div id="detailSaldoContainer" style="overflow:hidden;height:0;transition:height 0.4s ease"></div>
       </div>
     </div>
 
@@ -722,33 +499,24 @@ justify-content:center;
     </div>
 
     <div class="budget-card">
-
-<h6>📊 Budget Pengeluaran Bulanan</h6>
-
-<h4 id="budgetSisa">Rp 0</h4>
-
-<div class="budget-progress">
-<div class="budget-bar" id="budgetBar"></div>
-</div>
-
-<div id="budgetWarning" class="budget-warning"></div>
-
-<div class="budget-input" id="budgetInputContainer">
-<input type="text" id="budgetInput" placeholder="Set budget bulanan">
-<button id="btnBudget" onclick="setBudget()">Set</button>
-</div>
-
-<small>Budget akan otomatis terakumulasi dari sisa bulan sebelumnya</small>
-
-</div>
+      <h6>📊 Budget Pengeluaran Bulanan</h6>
+      <h4 id="budgetSisa">Rp 0</h4>
+      <div class="budget-progress">
+        <div class="budget-bar" id="budgetBar"></div>
+      </div>
+      <div id="budgetWarning" class="budget-warning"></div>
+      <div class="budget-input" id="budgetInputContainer">
+        <input type="text" id="budgetInput" placeholder="Set budget bulanan">
+        <button id="btnBudget" onclick="setBudget()">Set</button>
+      </div>
+      <small>Budget akan otomatis terakumulasi dari sisa bulan sebelumnya</small>
+    </div>
 
     <div class="riwayat-title">📜 Riwayat Transaksi</div>
 
     <div class="filter-export">
       <input type="text" id="filter" placeholder="Cari transaksi..." onkeyup="filterTable()" />
-      <button class="btn-export" onclick="exportExcel()">
-        📤 Export Excel
-      </button>
+      <button class="btn-export" onclick="exportExcel()">📤 Export Excel</button>
     </div>
 
     <div class="tanggal-filter flex-wrap flex-md-nowrap">
@@ -763,54 +531,67 @@ justify-content:center;
   </div>
 
   <script>
-    const SCRIPT_URL ="https://script.google.com/macros/s/AKfycbw5UI62pPBiMR2p2ufug85ezTALEY4E9letcocy05dup1hHOF0jLO3LNQL9TrOydCHR/exec";
+    // =====================================================
+    // ✅ KUNCI PERBAIKAN: Semua write pakai GET + query string
+    // Kenapa? POST ke GAS dari browser luar butuh CORS preflight.
+    // GAS tidak support preflight dengan benar, sehingga:
+    //   - mode:"cors"  → error CORS, fetch gagal total
+    //   - mode:"no-cors" → request terkirim TAPI response tidak bisa dibaca,
+    //                      DAN Content-Type berubah jadi text/plain,
+    //                      sehingga e.parameter di GAS KOSONG → data tidak tersimpan
+    //
+    // Solusi: Kirim semua action via GET parameter → doGet membaca e.parameter
+    // GET tidak butuh preflight, tidak ada masalah CORS sama sekali.
+    // =====================================================
+
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5UI62pPBiMR2p2ufug85ezTALEY4E9letcocy05dup1hHOF0jLO3LNQL9TrOydCHR/exec";
+
     let semuaData = [];
     let semuaBudget = [];
 
+    // ✅ Helper: kirim GET request dengan query params
+    async function gasGet(params) {
+      const qs = new URLSearchParams({ ...params, t: Date.now() }).toString();
+      const res = await fetch(SCRIPT_URL + "?" + qs, {
+        method: "GET",
+        cache: "no-store"
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return await res.json();
+    }
+
     const showLoading = (show = true) => {
-      document.getElementById("loadingOverlay").style.display = show
-        ? "flex"
-        : "none";
+      document.getElementById("loadingOverlay").style.display = show ? "flex" : "none";
     };
 
     const formatRupiah = (angka) =>
-      "Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      "Rp " + Number(angka).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
     const formatTanggal = (t) => {
       const d = new Date(t);
       if (isNaN(d)) return "-";
-      return `${d.getDate().toString().padStart(2, "0")}/${(d.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}/${d.getFullYear()} ${d
-          .getHours()
-          .toString()
-          .padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
+      return `${d.getDate().toString().padStart(2,"0")}/${(d.getMonth()+1).toString().padStart(2,"0")}/${d.getFullYear()} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
     };
 
     document.getElementById("nominal").addEventListener("input", (e) => {
-      e.target.value = e.target.value
-        .replace(/\D/g, "")
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      e.target.value = e.target.value.replace(/\D/g,"").replace(/\B(?=(\d{3})+(?!\d))/g,".");
+    });
+
+    document.getElementById("budgetInput").addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/\D/g,"").replace(/\B(?=(\d{3})+(?!\d))/g,".");
     });
 
     function capitalizeFirst(str) {
-      return str
-        ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
-        : "";
+      return str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
     }
 
-    function showNotif(msg) {
-      const n = document.getElementById("notif");
-      n.innerText = msg;
-      setTimeout(() => (n.innerText = ""), 3000);
-    }
-
-    const jenisEl = document.getElementById("jenis");
-    const kategoriEl = document.getElementById("kategori");
-    const nominalEl = document.getElementById("nominal");
-    const deskripsiEl = document.getElementById("deskripsi");
-    const dompetEl = document.getElementById("dompet");
-    const kepemilikanEl = document.getElementById("kepemilikan");
-
+    // Elemen form
+    const jenisEl      = document.getElementById("jenis");
+    const kategoriEl   = document.getElementById("kategori");
+    const nominalEl    = document.getElementById("nominal");
+    const deskripsiEl  = document.getElementById("deskripsi");
+    const dompetEl     = document.getElementById("dompet");
+    const kepemilikanEl= document.getElementById("kepemilikan");
     const dompetDetailEl = document.getElementById("dompetDetail");
 
     const detailOptions = {
@@ -819,105 +600,155 @@ justify-content:center;
       "E-Wallet": ["Gopay", "Dana", "OVO", "ShopeePay", "LinkAja"],
     };
 
-    // // Update dropdown detail dompet saat dompet dipilih
-    // dompetEl.addEventListener("change", () => {
-    //   const dompet = dompetEl.value;
-    //   const options = detailOptions[dompet] || [];
-    //   dompetDetailEl.innerHTML = '<option value="">-- Pilih --</option>'; // reset
+    function updateDetailDompet() {
+      const dompet = dompetEl.value;
+      const options = detailOptions[dompet] || [];
+      dompetDetailEl.innerHTML = '<option value="">-- Pilih --</option>';
+      options.forEach((opt) => {
+        const el = document.createElement("option");
+        el.value = opt;
+        el.textContent = opt;
+        dompetDetailEl.appendChild(el);
+      });
+    }
 
-    //   options.forEach((opt) => {
-    //     const el = document.createElement("option");
-    //     el.value = opt;
-    //     el.textContent = opt;
-    //     dompetDetailEl.appendChild(el);
-    //   });
-    // });
+    // ✅ Satu listener saja (tidak duplikat)
+    dompetEl.addEventListener("change", updateDetailDompet);
 
-    async function simpanTransaksi() {
-  const jenis = jenisEl.value,
-    kategori = kategoriEl.value,
-    nominal = nominalEl.value.replace(/\./g, ""),
-    deskripsi = deskripsiEl.value,
-    dompet = dompetEl.value,
-    kepemilikan = kepemilikanEl.value,
-    dompetDetail = dompetDetailEl.value;
-
-  if (!kategori || !nominal)
-    return showToast("Lengkapi kategori dan nominal!", 3000, "error");
-
-  showLoading(true);
-
-  try {
-    // ✅ FIX: gunakan URLSearchParams + no-cors agar GAS menerimanya
-    await fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        action: "addTransaksi",
-        jenis, kategori, nominal, deskripsi,
-        dompet, dompetDetail, kepemilikan,
-      }),
+    window.addEventListener("DOMContentLoaded", () => {
+      updateDetailDompet();
     });
 
-    showLoading(false);
-    setTimeout(() => showOverlayToast("✅ Transaksi berhasil!"), 200);
-    closeModal();
-    kategoriEl.value = nominalEl.value = deskripsiEl.value = "";
-    dompetDetailEl.value = "";
-    loadData();
+    // =====================================================
+    // ✅ SIMPAN TRANSAKSI — pakai GET query string
+    // =====================================================
+    async function simpanTransaksi() {
+      const jenis       = jenisEl.value;
+      const kategori    = kategoriEl.value.trim();
+      const nominal     = nominalEl.value.replace(/\./g, "");
+      const deskripsi   = deskripsiEl.value.trim();
+      const dompet      = dompetEl.value;
+      const kepemilikan = kepemilikanEl.value;
+      const dompetDetail= dompetDetailEl.value;
 
-  } catch (err) {
-    showLoading(false); // ✅ FIX: loading berhenti meski error
-    console.error(err);
-    showToast("Gagal menyimpan transaksi!", 3000, "error");
-  }
-}
+      if (!kategori || !nominal)
+        return showToast("Lengkapi kategori dan nominal!", 3000, "error");
 
-async function loadData(){
+      const btnSimpan = document.getElementById("btnSimpan");
+      btnSimpan.disabled = true;
+      showLoading(true);
 
-showLoading(true)
+      try {
+        // ✅ FIX UTAMA: kirim via GET, bukan POST
+        // doGet di GAS membaca e.parameter.action
+        const result = await gasGet({
+          action: "addTransaksi",
+          jenis, kategori, nominal, deskripsi,
+          dompet, dompetDetail, kepemilikan
+        });
 
-try{
+        showLoading(false);
 
-const res = await fetch(SCRIPT_URL + "?t=" + Date.now(),{
-method:"GET",
-cache:"no-store"
-})
+        // Cek response dari GAS
+        if (result.status === "OK") {
+          setTimeout(() => showOverlayToast("✅ Transaksi berhasil!"), 200);
+          closeModal();
+          kategoriEl.value = "";
+          nominalEl.value = "";
+          deskripsiEl.value = "";
+          dompetDetailEl.value = "";
+          // Delay loadData sedikit agar GAS selesai tulis ke sheet
+          setTimeout(loadData, 1500);
+        } else {
+          showToast("GAS error: " + (result.message || "unknown"), 4000, "error");
+        }
 
-if(!res.ok){
-throw new Error("HTTP ERROR "+res.status)
-}
+      } catch (err) {
+        showLoading(false);
+        console.error("simpanTransaksi error:", err);
+        showToast("Gagal menyimpan transaksi! Cek koneksi.", 3000, "error");
+      } finally {
+        btnSimpan.disabled = false;
+      }
+    }
 
-const data = await res.json()
+    // =====================================================
+    // ✅ LOAD DATA — tetap GET biasa
+    // =====================================================
+    async function loadData() {
+      showLoading(true);
+      try {
+        const res = await fetch(SCRIPT_URL + "?action=getData&t=" + Date.now(), {
+          method: "GET",
+          cache: "no-store"
+        });
 
-console.log("RAW API:", data)
+        if (!res.ok) throw new Error("HTTP ERROR " + res.status);
 
-// HANDLE semua kemungkinan bentuk response
-if (Array.isArray(data)) {
-  semuaData = data
-  semuaBudget = []
-} else {
-  semuaData = data.transaksi || []
-  semuaBudget = data.budget || []
-}
+        const data = await res.json();
+        console.log("RAW API:", data);
 
-console.log("DATA FINAL:", semuaData)
+        if (Array.isArray(data)) {
+          semuaData = data;
+          semuaBudget = [];
+        } else {
+          semuaData = data.transaksi || [];
+          semuaBudget = data.budget || [];
+        }
 
-  handleBudgetUI()
-renderDashboard()
-renderRiwayat(filter3HariTerakhir(semuaData))
+        console.log("DATA FINAL:", semuaData);
+        console.log("BUDGET:", semuaBudget);
 
-}catch(err){
+        handleBudgetUI();
+        renderDashboard();
+        renderRiwayat(filter3HariTerakhir(semuaData));
 
-console.error("FETCH ERROR:",err)
-showToast("Gagal mengambil data dari Google Sheet",3000,"error")
+      } catch (err) {
+        console.error("FETCH ERROR:", err);
+        showToast("Gagal mengambil data dari Google Sheet", 3000, "error");
+      }
 
-}
+      showLoading(false);
+    }
 
-showLoading(false)
+    // =====================================================
+    // ✅ SET BUDGET — pakai GET query string
+    // =====================================================
+    async function setBudget() {
+      let val = document.getElementById("budgetInput").value.replace(/\./g, "");
+      if (!val) return showToast("Isi budget dulu!", 3000, "error");
 
-}
+      const now = new Date();
+      const btnBudget = document.getElementById("btnBudget");
+      btnBudget.disabled = true;
+      showLoading(true);
+
+      try {
+        // ✅ FIX UTAMA: kirim via GET
+        const result = await gasGet({
+          action: "setBudget",
+          bulan: now.getMonth() + 1,
+          tahun: now.getFullYear(),
+          budget: val
+        });
+
+        showLoading(false);
+
+        if (result.status === "OK") {
+          showOverlayToast("✅ Budget tersimpan");
+          setTimeout(loadData, 1500);
+        } else {
+          showToast("GAS error: " + (result.message || "unknown"), 4000, "error");
+        }
+
+      } catch (err) {
+        showLoading(false);
+        console.error("setBudget error:", err);
+        showToast("Gagal simpan budget! Cek koneksi.", 3000, "error");
+      } finally {
+        btnBudget.disabled = false;
+      }
+    }
 
     function filter3HariTerakhir(data) {
       const now = new Date();
@@ -940,150 +771,115 @@ showLoading(false)
       renderRiwayat(filtered);
     }
 
-  function renderDashboard() {
-  let pendapatan = 0;
-  let pengeluaran = 0;
-  let cash = 0;
-  let bank = 0;
-  let wallet = 0;
+    function renderDashboard() {
+      let pendapatan = 0, pengeluaran = 0, cash = 0, bank = 0, wallet = 0;
 
-  semuaData.forEach((trx) => {
-    // Pastikan nominal jadi angka
-    const n = Number(trx.nominal.toString().replace(/\./g, "")) || 0;
-    const jenis = String(trx.jenis || "").trim().toLowerCase();
-    const dompet = trx.dompet;
+      semuaData.forEach((trx) => {
+        const n = Number(trx.nominal.toString().replace(/\./g,"")) || 0;
+        const jenis = String(trx.jenis || "").trim().toLowerCase();
+        const dompet = trx.dompet;
 
-    if (jenis === "pendapatan") {
-      pendapatan += n;
+        if (jenis === "pendapatan") {
+          pendapatan += n;
+          if (dompet === "Cash") cash += n;
+          else if (dompet === "M-Banking") bank += n;
+          else wallet += n;
+        }
 
-      if (dompet === "Cash") cash += n;
-      else if (dompet === "M-Banking") bank += n;
-      else wallet += n;
-    }
-
-    if (jenis === "pengeluaran") {
-      pengeluaran += n;
-
-      if (dompet === "Cash") cash -= n;
-      else if (dompet === "M-Banking") bank -= n;
-      else wallet -= n;
-    }
-  });
-
-  document.getElementById("totalPendapatan").innerText = formatRupiah(pendapatan);
-  document.getElementById("totalPengeluaran").innerText = formatRupiah(pengeluaran);
-  document.getElementById("saldo").innerText = formatRupiah(pendapatan - pengeluaran);
-
-  document.getElementById("saldoCash").innerText = formatRupiah(cash);
-  document.getElementById("saldoBank").innerText = formatRupiah(bank);
-  document.getElementById("saldoWallet").innerText = formatRupiah(wallet);
-
-  updateBudget();
-}
-
-let detailOpen = null;
-const container = document.getElementById("detailSaldoContainer");
-
-function toggleDetail(tipe) {
-  if (detailOpen === tipe) {
-    // tutup
-    container.style.height = "0";
-    detailOpen = null;
-  } else {
-    // reset isi
-    container.innerHTML = "";
-
-    // filter data berdasarkan dompet
-    const dataFiltered = semuaData.filter((t) => t.dompet === tipe);
-
-    if (dataFiltered.length === 0) {
-      container.innerHTML = `<p class="text-center">Tidak ada data untuk ${tipe}</p>`;
-    } else {
-      const summary = {};
-
-      dataFiltered.forEach((t) => {
-        const key = `${t.kepemilikan} - ${t.dompetDetail}`;
-        const n = Number(t.nominal.toString().replace(/\./g, "")) || 0;
-        const jenis = String(t.jenis || "").trim().toLowerCase();
-
-        summary[key] =
-          (summary[key] || 0) + (jenis === "pendapatan" ? n : -n);
+        if (jenis === "pengeluaran") {
+          pengeluaran += n;
+          if (dompet === "Cash") cash -= n;
+          else if (dompet === "M-Banking") bank -= n;
+          else wallet -= n;
+        }
       });
 
-      Object.entries(summary).forEach(([k, v]) => {
-        const card = document.createElement("div");
-        card.className = "summary-card mb-2";
-        card.innerHTML = `<h6>${k}</h6><h3>${formatRupiah(v)}</h3>`;
-        container.appendChild(card);
-      });
+      document.getElementById("totalPendapatan").innerText = formatRupiah(pendapatan);
+      document.getElementById("totalPengeluaran").innerText = formatRupiah(pengeluaran);
+      document.getElementById("saldo").innerText = formatRupiah(pendapatan - pengeluaran);
+      document.getElementById("saldoCash").innerText = formatRupiah(cash);
+      document.getElementById("saldoBank").innerText = formatRupiah(bank);
+      document.getElementById("saldoWallet").innerText = formatRupiah(wallet);
+
+      updateBudget();
     }
 
-    // tampilkan slide down
-    container.style.display = "block";
-    const scrollH = container.scrollHeight;
-    container.style.height = scrollH + "px";
-    detailOpen = tipe;
-  }
-}
+    let detailOpen = null;
+    const detailContainer = document.getElementById("detailSaldoContainer");
+
+    function toggleDetail(tipe) {
+      if (detailOpen === tipe) {
+        detailContainer.style.height = "0";
+        detailOpen = null;
+      } else {
+        detailContainer.innerHTML = "";
+        const dataFiltered = semuaData.filter((t) => t.dompet === tipe);
+
+        if (dataFiltered.length === 0) {
+          detailContainer.innerHTML = `<p class="text-center">Tidak ada data untuk ${tipe}</p>`;
+        } else {
+          const summary = {};
+          dataFiltered.forEach((t) => {
+            const key = `${t.kepemilikan} - ${t.dompetDetail}`;
+            const n = Number(t.nominal.toString().replace(/\./g,"")) || 0;
+            const jenis = String(t.jenis || "").trim().toLowerCase();
+            summary[key] = (summary[key] || 0) + (jenis === "pendapatan" ? n : -n);
+          });
+          Object.entries(summary).forEach(([k, v]) => {
+            const card = document.createElement("div");
+            card.className = "summary-card mb-2";
+            card.innerHTML = `<h6>${k}</h6><h3>${formatRupiah(v)}</h3>`;
+            detailContainer.appendChild(card);
+          });
+        }
+
+        detailContainer.style.display = "block";
+        const scrollH = detailContainer.scrollHeight;
+        detailContainer.style.height = scrollH + "px";
+        detailOpen = tipe;
+      }
+    }
 
     function renderRiwayat(data) {
-      const container = document.getElementById("riwayatContainer");
-      container.innerHTML = "";
+      const cont = document.getElementById("riwayatContainer");
+      cont.innerHTML = "";
       if (data.length === 0) {
-        container.innerHTML =
-          "<p class='text-center mt-3'>Tidak ada transaksi.</p>";
+        cont.innerHTML = "<p class='text-center mt-3'>Tidak ada transaksi.</p>";
         return;
       }
-      data
-        .slice()
-        .reverse()
-        .forEach((trx) => {
-          container.innerHTML += `
-      <div class="trx-card">
-        <div class="trx-header">
-          <h6>${trx.kategori.toUpperCase()}</h6>
-          <span class="trx-date">${formatTanggal(trx.tanggal)}</span>
-        </div>
-        <div class="trx-detail">
-          <span>${trx.jenis} • ${trx.kepemilikan} • ${trx.dompet} (${trx.dompetDetail
-            })</span>
-          <span class="trx-nominal ${trx.jenis.toLowerCase()}">${formatRupiah(
-              trx.nominal
-            )}</span>
-        </div>
-        <small class="trx-deskripsi">${capitalizeFirst(
-              trx.deskripsi || "-"
-            )}</small>
-      </div>`;
-        });
+      data.slice().reverse().forEach((trx) => {
+        cont.innerHTML += `
+        <div class="trx-card">
+          <div class="trx-header">
+            <h6>${trx.kategori.toUpperCase()}</h6>
+            <span class="trx-date">${formatTanggal(trx.tanggal)}</span>
+          </div>
+          <div class="trx-detail">
+            <span>${trx.jenis} • ${trx.kepemilikan} • ${trx.dompet} (${trx.dompetDetail})</span>
+            <span class="trx-nominal ${trx.jenis.toLowerCase()}">${formatRupiah(trx.nominal)}</span>
+          </div>
+          <small class="trx-deskripsi">${capitalizeFirst(trx.deskripsi || "-")}</small>
+        </div>`;
+      });
     }
 
     function filterTable() {
       const keyword = document.getElementById("filter").value.toLowerCase();
       const filtered = semuaData.filter((t) =>
-        (t.kategori + t.dompet + t.jenis + t.deskripsi)
-          .toLowerCase()
-          .includes(keyword)
+        (t.kategori + t.dompet + t.jenis + t.deskripsi).toLowerCase().includes(keyword)
       );
       renderRiwayat(filtered);
     }
 
     function showToast(message, duration = 3000, type = "info") {
-      const container = document.getElementById("toastContainer");
+      const cont = document.getElementById("toastContainer");
       const toast = document.createElement("div");
       toast.className = "toast";
       toast.innerText = message;
-
-      // optional: warna berbeda untuk type
       if (type === "error") toast.style.backgroundColor = "#e63946";
       else if (type === "success") toast.style.backgroundColor = "#22a707";
-
-      container.appendChild(toast);
-
-      // tampilkan animasi
+      cont.appendChild(toast);
       requestAnimationFrame(() => toast.classList.add("show"));
-
-      // hilangkan otomatis
       setTimeout(() => {
         toast.classList.remove("show");
         toast.addEventListener("transitionend", () => toast.remove());
@@ -1094,15 +890,12 @@ function toggleDetail(tipe) {
 
     function showOverlayToast(message = "✅ Berhasil!", duration = 1500) {
       if (overlayToastVisible) return;
-
       overlayToastVisible = true;
       const toast = document.getElementById("overlayToast");
       document.getElementById("overlayToastText").innerText = message;
-
       toast.classList.remove("show");
-      toast.offsetWidth; // trigger reflow
+      toast.offsetWidth;
       toast.classList.add("show");
-
       setTimeout(() => {
         toast.classList.remove("show");
         overlayToastVisible = false;
@@ -1117,9 +910,7 @@ function toggleDetail(tipe) {
 
       if (keyword) {
         filtered = filtered.filter((t) =>
-          (t.kategori + t.dompet + t.jenis + t.deskripsi)
-            .toLowerCase()
-            .includes(keyword)
+          (t.kategori + t.dompet + t.jenis + t.deskripsi).toLowerCase().includes(keyword)
         );
       }
 
@@ -1138,27 +929,15 @@ function toggleDetail(tipe) {
         return;
       }
 
-      // Fungsi format tanggal
       const formatTanggalExcel = (t) => {
         const d = new Date(t);
         if (isNaN(d)) return "-";
-        return `${d.getDate().toString().padStart(2, "0")}/${(
-          d.getMonth() + 1
-        )
-          .toString()
-          .padStart(2, "0")}/${d.getFullYear()} ${d
-            .getHours()
-            .toString()
-            .padStart(2, "0")}:${d.getMinutes().toString().padStart(2, "0")}`;
+        return `${d.getDate().toString().padStart(2,"0")}/${(d.getMonth()+1).toString().padStart(2,"0")}/${d.getFullYear()} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
       };
 
-      // Buat header kolom CSV
       let csv = "Jenis,Kategori,Nominal,Deskripsi,Dompet,Tanggal\n";
-
-      // Isi data CSV dengan format tanggal yang sudah diperbaiki
       filtered.forEach((trx) => {
-        csv += `${trx.jenis},${trx.kategori},${trx.nominal},"${trx.deskripsi
-          }",${trx.dompet},${formatTanggalExcel(trx.tanggal)}\n`;
+        csv += `${trx.jenis},${trx.kategori},${trx.nominal},"${trx.deskripsi}",${trx.dompet},${formatTanggalExcel(trx.tanggal)}\n`;
       });
 
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -1170,245 +949,120 @@ function toggleDetail(tipe) {
       URL.revokeObjectURL(url);
     }
 
-    // Tambahkan event agar "Cash" muncul langsung saat pertama kali halaman dibuka
-    window.addEventListener("DOMContentLoaded", () => {
-      updateDetailDompet();
-    });
-
-    // Ubah bagian event listener dompet agar memanggil fungsi baru
-    dompetEl.addEventListener("change", updateDetailDompet);
-
-    function updateDetailDompet() {
-      const dompet = dompetEl.value;
-      const options = detailOptions[dompet] || [];
-      dompetDetailEl.innerHTML = '<option value="">-- Pilih --</option>';
-
-      options.forEach((opt) => {
-        const el = document.createElement("option");
-        el.value = opt;
-        el.textContent = opt;
-        dompetDetailEl.appendChild(el);
-      });
-    }
-
-    // Tambahkan juga listener agar tetap update jika user klik ulang opsi yang sama
-    dompetEl.addEventListener("click", () => {
-      updateDetailDompet();
-    });
-
-    if ("serviceWorker" in navigator)
-      navigator.serviceWorker.register("sw.js");
-
-    loadData();
-    // console.log(semuaData)
-    // setInterval(loadData, 30000);
-
     function openModal() {
-      document.getElementById("modalTambah").classList.add("show")
-      document.getElementById("modalBackdrop").classList.add("show")
+      document.getElementById("modalTambah").classList.add("show");
+      document.getElementById("modalBackdrop").classList.add("show");
     }
 
     function closeModal() {
-      document.getElementById("modalTambah").classList.remove("show")
-      document.getElementById("modalBackdrop").classList.remove("show")
+      document.getElementById("modalTambah").classList.remove("show");
+      document.getElementById("modalBackdrop").classList.remove("show");
     }
 
-    const APP_PASSWORD="nativan300424";
+    const APP_PASSWORD = "nativan300424";
 
-function checkPassword(){
-
-const input=document.getElementById("passwordInput").value;
-
-if(input===APP_PASSWORD){
-
-const loginData={
-status:true,
-time:Date.now()
-};
-
-localStorage.setItem("login_nativan",JSON.stringify(loginData));
-
-document.getElementById("loginScreen").style.display="none";
-
-loadData();
-
-}else{
-
-document.getElementById("loginError").innerText="Password salah";
-
-}
-
-}
-
-    window.addEventListener("load",()=>{
-
-const login=localStorage.getItem("login_nativan");
-
-if(!login) return;
-
-const data=JSON.parse(login);
-
-const oneHour=60*60*1000;
-
-if(Date.now()-data.time < oneHour){
-
-document.getElementById("loginScreen").style.display="none";
-loadData();
-
-}else{
-
-localStorage.removeItem("login_nativan");
-
-}
-
-});
-
-    localStorage.setItem("login_time", Date.now());
-
-    const loginTime = localStorage.getItem("login_time");
-
-    if (Date.now() - loginTime > 43200000) {
-      localStorage.removeItem("login_nativan");
+    function checkPassword() {
+      const input = document.getElementById("passwordInput").value;
+      if (input === APP_PASSWORD) {
+        localStorage.setItem("login_nativan", JSON.stringify({ status: true, time: Date.now() }));
+        document.getElementById("loginScreen").style.display = "none";
+        loadData();
+      } else {
+        document.getElementById("loginError").innerText = "Password salah";
+      }
     }
 
-    document.getElementById("budgetInput").addEventListener("input", (e)=>{
-  e.target.value = e.target.value
-  .replace(/\D/g,"")
-  .replace(/\B(?=(\d{3})+(?!\d))/g,".")
-})
-
-async function setBudget() {
-  let val = document.getElementById("budgetInput").value.replace(/\./g, "");
-  if (!val) return showToast("Isi budget dulu!", 3000, "error");
-
-  const now = new Date();
-  showLoading(true);
-
-  try {
-    // ✅ FIX: no-cors agar tidak kena CORS preflight block
-    await fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        action: "setBudget",
-        bulan: now.getMonth() + 1,
-        tahun: now.getFullYear(),
-        budget: val,
-      }),
+    window.addEventListener("load", () => {
+      const login = localStorage.getItem("login_nativan");
+      if (!login) return;
+      const data = JSON.parse(login);
+      const oneHour = 60 * 60 * 1000;
+      if (Date.now() - data.time < oneHour) {
+        document.getElementById("loginScreen").style.display = "none";
+        loadData();
+      } else {
+        localStorage.removeItem("login_nativan");
+      }
     });
 
-    showLoading(false);
-    showOverlayToast("✅ Budget tersimpan");
+    // Cek session 12 jam
+    const loginTime = localStorage.getItem("login_time");
+    if (loginTime && Date.now() - loginTime > 43200000) {
+      localStorage.removeItem("login_nativan");
+    }
+    localStorage.setItem("login_time", Date.now());
+
+    function updateBudget() {
+      const now = new Date();
+      const bulan = now.getMonth() + 1;
+      const tahun = now.getFullYear();
+
+      let budget = 0;
+      semuaBudget.forEach(b => {
+        if (b.bulan == bulan && b.tahun == tahun) budget = parseInt(b.budget);
+      });
+
+      const current = semuaBudget.find(b => b.bulan == bulan && b.tahun == tahun);
+      let pengeluaran = current ? (Number(current.realisasi) || 0) : 0;
+
+      if (!budget) {
+        document.getElementById("budgetSisa").innerText = "Belum ada budget bulan ini";
+        document.getElementById("budgetBar").style.width = "0%";
+        document.getElementById("budgetWarning").innerHTML = "";
+        return;
+      }
+
+      let persen = (pengeluaran / budget) * 100;
+      let sisa = budget - pengeluaran;
+
+      document.getElementById("budgetSisa").innerText = "Sisa: " + formatRupiah(sisa);
+
+      const bar = document.getElementById("budgetBar");
+      bar.style.width = Math.min(persen, 100) + "%";
+
+      const warning = document.getElementById("budgetWarning");
+
+      if (persen >= 100) {
+        bar.style.background = "#ef4444";
+        warning.innerHTML = "⚠ Budget bulan ini HABIS";
+        warning.className = "budget-warning warning100";
+      } else if (persen >= 90) {
+        bar.style.background = "#fb923c";
+        warning.innerHTML = "⚠ Budget hampir habis (90%)";
+        warning.className = "budget-warning warning90";
+      } else if (persen >= 80) {
+        bar.style.background = "#fde047";
+        warning.innerHTML = "⚠ Budget sudah 80%";
+        warning.className = "budget-warning warning80";
+      } else {
+        bar.style.background = "#22c55e";
+        warning.innerHTML = "Budget bulan ini aman ✓";
+        warning.className = "budget-warning";
+      }
+    }
+
+    function handleBudgetUI() {
+      const now = new Date();
+      const bulan = now.getMonth() + 1;
+      const tahun = now.getFullYear();
+      const existing = semuaBudget.find(b => b.bulan == bulan && b.tahun == tahun);
+      const input = document.getElementById("budgetInput");
+      const btn = document.getElementById("btnBudget");
+      if (existing && existing.budget) {
+        input.value = Number(existing.budget).toString().replace(/\B(?=(\d{3})+(?!\d))/g,".");
+        btn.innerText = "Edit";
+      } else {
+        input.value = "";
+        btn.innerText = "Set";
+      }
+    }
+
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+
     loadData();
-
-  } catch (err) {
-    showLoading(false); // ✅ FIX: loading berhenti meski error
-    console.error(err);
-    showToast("Gagal simpan budget", 3000, "error");
-  }
-}
-
- function updateBudget(){
-
-const now=new Date()
-
-const bulan=now.getMonth()+1
-const tahun=now.getFullYear()
-
-// ambil budget bulan ini
-let budget=0
-
-semuaBudget.forEach(b=>{
-if(b.bulan==bulan && b.tahun==tahun){
-budget=parseInt(b.budget)
-}
-})
-
-// hitung pengeluaran bulan ini
-let pengeluaran = 0
-
-const current = semuaBudget.find(b => b.bulan==bulan && b.tahun==tahun)
-
-if(current){
-pengeluaran = Number(current.realisasi) || 0
-}
-
-let persen = budget ? (pengeluaran/budget)*100 : 0
-
-let sisa = budget - pengeluaran
-
-if(!budget){
-  document.getElementById("budgetSisa").innerText = "Belum ada budget bulan ini"
-  return
-}
-
-const bar=document.getElementById("budgetBar")
-
-bar.style.width=Math.min(persen,100)+"%"
-
-const warning=document.getElementById("budgetWarning")
-
-if(persen>=100){
-
-bar.style.background="#ef4444"
-warning.innerHTML="⚠ Budget bulan ini HABIS"
-warning.className="budget-warning warning100"
-
-}
-else if(persen>=90){
-
-bar.style.background="#fb923c"
-warning.innerHTML="⚠ Budget hampir habis (90%)"
-warning.className="budget-warning warning90"
-
-}
-else if(persen>=80){
-
-bar.style.background="#fde047"
-warning.innerHTML="⚠ Budget sudah 80%"
-warning.className="budget-warning warning80"
-
-}
-else{
-
-bar.style.background="#22c55e"
-warning.innerHTML="Budget bulan ini aman"
-warning.className="budget-warning"
-
-}
-
-} 
-
-    function handleBudgetUI(){
-
-const now = new Date()
-const bulan = now.getMonth()+1
-const tahun = now.getFullYear()
-
-let existing = semuaBudget.find(b => b.bulan==bulan && b.tahun==tahun)
-
-const input = document.getElementById("budgetInput")
-const btn = document.getElementById("btnBudget")
-
-if(existing){
-
-input.value = formatRupiah(existing.budget).replace("Rp ","")
-btn.innerText = "Edit"
-}else{
-
-input.value = ""
-btn.innerText = "Set"
-}
-
-}
   </script>
 
-  <button class="fab-add" onclick="openModal()">
-    ＋
-  </button>
-
+  <button class="fab-add" onclick="openModal()">＋</button>
 
 </body>
-
 </html>
