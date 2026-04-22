@@ -3,7 +3,7 @@
    Versi dengan Push Notification support
    ===================================================== */
 
-const CACHE_NAME = "nativan-finance-v4";
+const CACHE_NAME = "nativan-finance-v5";
 
 // File yang di-cache untuk offline
 const CACHE_FILES = [
