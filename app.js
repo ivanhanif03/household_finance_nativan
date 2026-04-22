@@ -11,7 +11,7 @@ const APP_PASSWORD = "nativan300424";
 // VAPID public key for push notifications
 // Ganti dengan VAPID key milikmu (generate via web-push library)
 // Bisa generate di: https://vapidkeys.com/
-const VAPID_PUBLIC_KEY = "BErGKTEywRWYXJrrWV8gChZ4gBRV_5CjUhoqLZ1p6RcrvL4TV-8eGmSVaR8HLt5NlskPzPwiBcSlYw1N7D9W_Vw";
+const VAPID_PUBLIC_KEY = "BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBfC7PCjnXR3UjN2bG4kEMXLpkQ";
 
 // ─────────────────────────────────────────────────
 // STATE
@@ -171,31 +171,78 @@ async function simpanTransaksi() {
 }
 
 // ─────────────────────────────────────────────────
-// LOAD DATA
+// SPLASH SCREEN HELPERS
 // ─────────────────────────────────────────────────
-async function loadData() {
-  showLoading(true);
+function showSplash() {
+  document.getElementById("splashScreen").classList.add("active");
+}
+
+function hideSplash() {
+  const splash = document.getElementById("splashScreen");
+  splash.style.transition = "opacity .5s ease";
+  splash.style.opacity    = "0";
+  setTimeout(() => {
+    splash.classList.remove("active");
+    splash.style.opacity = "";
+    splash.style.transition = "";
+  }, 500);
+}
+
+function setSplashProgress(pct, status) {
+  document.getElementById("splashBar").style.width = pct + "%";
+  document.getElementById("splashPct").textContent = Math.round(pct) + "%";
+  if (status) document.getElementById("splashStatus").textContent = status;
+}
+
+// ─────────────────────────────────────────────────
+// LOAD DATA (dengan splash progress)
+// ─────────────────────────────────────────────────
+async function loadData(withSplash = false) {
+  if (withSplash) {
+    showSplash();
+    setSplashProgress(10, "Menghubungkan ke server...");
+  } else {
+    showLoading(true);
+  }
+
   try {
+    if (withSplash) setSplashProgress(30, "Mengambil data transaksi...");
+
     const data = await gasCall({ action: "getData" });
 
     if (data.status === "ERROR") {
       showToast("❌ GAS error: " + data.message, 5000, "error");
-      showLoading(false);
+      if (withSplash) hideSplash(); else showLoading(false);
       return;
     }
+
+    if (withSplash) setSplashProgress(65, "Memproses data keuangan...");
 
     semuaData   = data.transaksi || [];
     semuaBudget = data.budget    || [];
 
+    if (withSplash) setSplashProgress(80, "Menghitung saldo & budget...");
+
     handleBudgetUI();
     renderDashboard();
+
+    if (withSplash) setSplashProgress(95, "Menyiapkan riwayat transaksi...");
+
     renderRiwayat(filter3HariTerakhir(semuaData));
+
+    if (withSplash) {
+      setSplashProgress(100, "Selesai! ✨");
+      // Tunggu sebentar di 100% biar keliatan, lalu hide splash
+      setTimeout(() => hideSplash(), 600);
+    }
 
   } catch (err) {
     console.error("[loadData]", err);
     showToast("❌ Gagal load data: " + err.message, 5000, "error");
+    if (withSplash) hideSplash();
   }
-  showLoading(false);
+
+  if (!withSplash) showLoading(false);
 }
 
 // ─────────────────────────────────────────────────
@@ -473,9 +520,8 @@ function checkPassword() {
   if (v === APP_PASSWORD) {
     localStorage.setItem("login_nativan", JSON.stringify({ status:true, time:Date.now() }));
     document.getElementById("loginScreen").style.display = "none";
-    loadData();
-    // Minta izin notifikasi setelah login
-    setTimeout(requestNotifPermission, 1500);
+    loadData(true); // pakai splash screen
+    setTimeout(requestNotifPermission, 3000);
   } else {
     document.getElementById("loginError").textContent = "❌ Password salah, coba lagi";
   }
@@ -645,8 +691,8 @@ window.addEventListener("load", () => {
       const sess = JSON.parse(raw);
       if (Date.now() - sess.time < 60 * 60 * 1000) {
         document.getElementById("loginScreen").style.display = "none";
-        loadData();
-        setTimeout(requestNotifPermission, 1500);
+        loadData(true); // pakai splash screen
+        setTimeout(requestNotifPermission, 3000);
       } else {
         localStorage.removeItem("login_nativan");
       }
