@@ -1365,13 +1365,15 @@ try{
 
 await fetch(SCRIPT_URL, {
   method: "POST",
-  mode: "no-cors",
+  mode: "cors",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     action: "setBudget",
+  payload: {
     bulan: now.getMonth()+1,
     tahun: now.getFullYear(),
     budget: val
+  }
   })
 })
 
