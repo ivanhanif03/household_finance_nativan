@@ -819,62 +819,60 @@ justify-content:center;
       "E-Wallet": ["Gopay", "Dana", "OVO", "ShopeePay", "LinkAja"],
     };
 
-    // Update dropdown detail dompet saat dompet dipilih
-    dompetEl.addEventListener("change", () => {
-      const dompet = dompetEl.value;
-      const options = detailOptions[dompet] || [];
-      dompetDetailEl.innerHTML = '<option value="">-- Pilih --</option>'; // reset
+    // // Update dropdown detail dompet saat dompet dipilih
+    // dompetEl.addEventListener("change", () => {
+    //   const dompet = dompetEl.value;
+    //   const options = detailOptions[dompet] || [];
+    //   dompetDetailEl.innerHTML = '<option value="">-- Pilih --</option>'; // reset
 
-      options.forEach((opt) => {
-        const el = document.createElement("option");
-        el.value = opt;
-        el.textContent = opt;
-        dompetDetailEl.appendChild(el);
-      });
-    });
+    //   options.forEach((opt) => {
+    //     const el = document.createElement("option");
+    //     el.value = opt;
+    //     el.textContent = opt;
+    //     dompetDetailEl.appendChild(el);
+    //   });
+    // });
 
     async function simpanTransaksi() {
-      const jenis = jenisEl.value,
-        kategori = kategoriEl.value,
-        nominal = nominalEl.value.replace(/\./g, ""),
-        deskripsi = deskripsiEl.value,
-        dompet = dompetEl.value,
-        kepemilikan = kepemilikanEl.value,
-        dompetDetail = dompetDetailEl.value;
+  const jenis = jenisEl.value,
+    kategori = kategoriEl.value,
+    nominal = nominalEl.value.replace(/\./g, ""),
+    deskripsi = deskripsiEl.value,
+    dompet = dompetEl.value,
+    kepemilikan = kepemilikanEl.value,
+    dompetDetail = dompetDetailEl.value;
 
-      if (!kategori || !nominal)
-        return showToast("Lengkapi kategori dan nominal!", 3000, "error");
+  if (!kategori || !nominal)
+    return showToast("Lengkapi kategori dan nominal!", 3000, "error");
 
-      // spinner aktif
-      showLoading(true);
+  showLoading(true);
 
-      await fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "addTransaksi", // ✅ WAJIB
-          jenis,
-          kategori,
-          nominal,
-          deskripsi,
-          dompet,
-          dompetDetail,
-          kepemilikan,
-        }),
-      });
+  try {
+    // ✅ FIX: gunakan URLSearchParams + no-cors agar GAS menerimanya
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        action: "addTransaksi",
+        jenis, kategori, nominal, deskripsi,
+        dompet, dompetDetail, kepemilikan,
+      }),
+    });
 
-      // spinner hilang
-      showLoading(false);
+    showLoading(false);
+    setTimeout(() => showOverlayToast("✅ Transaksi berhasil!"), 200);
+    closeModal();
+    kategoriEl.value = nominalEl.value = deskripsiEl.value = "";
+    dompetDetailEl.value = "";
+    loadData();
 
-      // toast muncul setelah spinner hilang
-      setTimeout(() => showOverlayToast("✅ Transaksi berhasil!"), 200);
-
-      loadData();
-      console.log(semuaData)
-      kategoriEl.value = nominalEl.value = deskripsiEl.value = "";
-      dompetDetailEl.value = "";
-    }
+  } catch (err) {
+    showLoading(false); // ✅ FIX: loading berhenti meski error
+    console.error(err);
+    showToast("Gagal menyimpan transaksi!", 3000, "error");
+  }
+}
 
 async function loadData(){
 
@@ -1279,40 +1277,36 @@ localStorage.removeItem("login_nativan");
   .replace(/\B(?=(\d{3})+(?!\d))/g,".")
 })
 
-async function setBudget(){
+async function setBudget() {
+  let val = document.getElementById("budgetInput").value.replace(/\./g, "");
+  if (!val) return showToast("Isi budget dulu!", 3000, "error");
 
-let val = document.getElementById("budgetInput").value.replace(/\./g,"")
+  const now = new Date();
+  showLoading(true);
 
-if(!val) return showToast("Isi budget dulu!",3000,"error")
+  try {
+    // ✅ FIX: no-cors agar tidak kena CORS preflight block
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        action: "setBudget",
+        bulan: now.getMonth() + 1,
+        tahun: now.getFullYear(),
+        budget: val,
+      }),
+    });
 
-const now = new Date()
+    showLoading(false);
+    showOverlayToast("✅ Budget tersimpan");
+    loadData();
 
-showLoading(true)
-
-try{
-
-await fetch(SCRIPT_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/x-www-form-urlencoded"
-  },
-  body: new URLSearchParams({
-    action: "setBudget",
-    bulan: now.getMonth()+1,
-    tahun: now.getFullYear(),
-    budget: val
-  })
-})
-
-showOverlayToast("✅ Budget tersimpan")
-
-}catch(err){
-console.error(err)
-showToast("Gagal simpan budget",3000,"error")
-}
-
-showLoading(false)
-loadData()
+  } catch (err) {
+    showLoading(false); // ✅ FIX: loading berhenti meski error
+    console.error(err);
+    showToast("Gagal simpan budget", 3000, "error");
+  }
 }
 
  function updateBudget(){
