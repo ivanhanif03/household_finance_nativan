@@ -1353,25 +1353,29 @@ if(!val) return showToast("Isi budget dulu!",3000,"error")
 
 const now = new Date()
 
+// ❗ VALIDASI BIAR GA DOUBLE SET
+const exist = semuaBudget.find(b => 
+  b.bulan == (now.getMonth()+1) &&
+  b.tahun == now.getFullYear()
+)
+
 showLoading(true)
 
 try{
 
 await fetch(SCRIPT_URL, {
   method: "POST",
-  mode: "no-cors", // ✅ WAJIB
-  headers: {
-    "Content-Type": "application/json"
-  },
+  mode: "no-cors",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     action: "setBudget",
-    bulan: now.getMonth() + 1,
+    bulan: now.getMonth()+1,
     tahun: now.getFullYear(),
     budget: val
   })
 })
 
-showOverlayToast("✅ Budget tersimpan")
+showOverlayToast(exist ? "✅ Budget diupdate" : "✅ Budget dibuat")
 
 }catch(err){
 
@@ -1379,7 +1383,7 @@ showToast("Gagal simpan budget",3000,"error")
 
 }
 
-showLoading(false) // ✅ PASTIKAN DI LUAR TRY
+showLoading(false)
 
 loadData()
 }
@@ -1413,8 +1417,10 @@ let persen = budget ? (pengeluaran/budget)*100 : 0
 
 let sisa = budget - pengeluaran
 
-document.getElementById("budgetSisa").innerText =
-"Budget tersisa: "+formatRupiah(Math.max(sisa,0))
+if(!budget){
+  document.getElementById("budgetSisa").innerText = "Belum ada budget bulan ini"
+  return
+}
 
 const bar=document.getElementById("budgetBar")
 
