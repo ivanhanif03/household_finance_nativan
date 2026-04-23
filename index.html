@@ -4,248 +4,215 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Keuangan Rumah Tangga Nativan</title>
-
-  <!-- PWA Meta -->
   <link rel="icon"             href="assets/icons/icon-192.png" type="image/png" />
   <link rel="apple-touch-icon" href="assets/icons/icon-512.png" />
-  <meta name="mobile-web-app-capable"              content="yes" />
-  <meta name="apple-mobile-web-app-capable"        content="yes" />
+  <meta name="mobile-web-app-capable"                content="yes" />
+  <meta name="apple-mobile-web-app-capable"          content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title"          content="Finance Nativan" />
-  <meta name="theme-color"                         content="#2563eb" />
+  <meta name="apple-mobile-web-app-title"            content="Nativan" />
+  <meta name="theme-color"                           content="#2563eb" />
   <link rel="manifest" href="manifest.json" />
-
-  <!-- Fonts & Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- App CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════════
-       LOGIN SCREEN
-  ═══════════════════════════════════════════════ -->
   <div id="loginScreen">
     <div class="login-box">
       <div class="login-logo">🏠</div>
       <h3>Keuangan Nativan</h3>
       <p>Masukkan password untuk melanjutkan</p>
-      <input
-        type="password"
-        id="passwordInput"
-        class="login-input"
-        placeholder="••••••••••••"
-        autocomplete="current-password"
-      />
+      <input type="password" id="passwordInput" class="login-input" placeholder="••••••••••••" autocomplete="current-password" />
       <button class="btn-login" onclick="checkPassword()">Masuk →</button>
       <div id="loginError"></div>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════════
-       SPLASH LOADING SCREEN (muncul setelah login)
-  ═══════════════════════════════════════════════ -->
   <div id="splashScreen">
     <div class="splash-content">
       <div class="splash-logo">🏠</div>
       <h2 class="splash-title">Keuangan Nativan</h2>
-      <p class="splash-subtitle" id="splashStatus">Menghubungkan ke server...</p>
-      <div class="splash-progress-wrap">
-        <div class="splash-progress-bar" id="splashBar"></div>
-      </div>
+      <p class="splash-subtitle" id="splashStatus">Mempersiapkan aplikasi...</p>
+      <div class="splash-progress-wrap"><div class="splash-progress-bar" id="splashBar"></div></div>
       <p class="splash-pct" id="splashPct">0%</p>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════════
-       LOADING OVERLAY (untuk aksi simpan/set budget)
-  ═══════════════════════════════════════════════ -->
-  <div id="loadingOverlay">
-    <div class="spinner"></div>
-  </div>
-
-  <!-- Overlay Toast -->
+  <div id="loadingOverlay"><div class="spinner"></div></div>
   <div id="overlayToast"></div>
 
-  <!-- ═══════════════════════════════════════════════
-       TOAST CONTAINER
-  ═══════════════════════════════════════════════ -->
+  <div id="alertBackdrop" class="alert-backdrop" onclick="closeAlert()"></div>
+  <div id="alertModal" class="alert-modal">
+    <div class="alert-icon-wrap" id="alertIconWrap"></div>
+    <h4 class="alert-title"   id="alertTitle"></h4>
+    <p  class="alert-message" id="alertMessage"></p>
+    <div class="alert-actions" id="alertActions"></div>
+  </div>
+
   <div id="toastContainer"></div>
 
-  <!-- ═══════════════════════════════════════════════
-       MAIN APP
-  ═══════════════════════════════════════════════ -->
   <div class="container mx-auto px-3">
-
-    <!-- Modal Backdrop -->
     <div id="modalBackdrop" class="modal-backdrop-ios" onclick="closeModal()"></div>
 
-    <!-- ───────────────────────────────────────────
-         MODAL TAMBAH TRANSAKSI
-    ─────────────────────────────────────────────── -->
     <div id="modalTambah" class="modal-ios">
       <div class="modal-handle"></div>
-      <div class="modal-title">➕ Tambah Transaksi</div>
-
-      <div class="mb-3">
-        <label class="form-label">Jenis Transaksi</label>
-        <select id="jenis" class="form-select">
-          <option value="Pendapatan">💰 Pendapatan</option>
-          <option value="Pengeluaran">💸 Pengeluaran</option>
-        </select>
+      <div class="modal-tabs">
+        <button class="modal-tab active" id="tabTrx"      onclick="switchModalTab('trx')">➕ Transaksi</button>
+        <button class="modal-tab"        id="tabTransfer" onclick="switchModalTab('transfer')">🔄 Pindah Dana</button>
       </div>
 
-      <div class="mb-3">
-        <label class="form-label">Kategori</label>
-        <input type="text" id="kategori" class="form-control" placeholder="Contoh: Gaji, Makan, Transport">
+      <div id="panelTrx">
+        <div class="mb-3">
+          <label class="form-label">Jenis Transaksi</label>
+          <select id="jenis" class="form-select">
+            <option value="Pendapatan">💰 Pendapatan</option>
+            <option value="Pengeluaran">💸 Pengeluaran</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Kategori</label>
+          <input type="text" id="kategori" class="form-control" placeholder="Contoh: Gaji, Makan, Transport">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Nominal</label>
+          <input type="text" id="nominal" class="form-control" placeholder="Contoh: 1.500.000" inputmode="numeric">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Deskripsi</label>
+          <input type="text" id="deskripsi" class="form-control" placeholder="Keterangan tambahan (opsional)">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Kepemilikan</label>
+          <select id="kepemilikan" class="form-select">
+            <option value="Ayah">Ayah</option>
+            <option value="Ibun">Ibun</option>
+            <option value="Izora">Izora</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Dompet</label>
+          <select id="dompet" class="form-select">
+            <option value="Cash">💵 Cash</option>
+            <option value="M-Banking">🏦 M-Banking</option>
+            <option value="E-Wallet">📱 E-Wallet</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Detail Dompet</label>
+          <select id="dompetDetail" class="form-select"><option value="">-- Pilih --</option></select>
+        </div>
+        <button id="btnSimpan" class="btn-blue" onclick="simpanTransaksi()">Simpan Transaksi</button>
+        <div id="debugPanel"></div>
       </div>
 
-      <div class="mb-3">
-        <label class="form-label">Nominal</label>
-        <input type="text" id="nominal" class="form-control" placeholder="Contoh: 1.500.000" inputmode="numeric">
+      <div id="panelTransfer" style="display:none">
+        <div class="transfer-info-box">🔄 Pindah dana antar dompet <strong>tidak mempengaruhi budget bulanan</strong></div>
+        <div class="mb-3">
+          <label class="form-label">Nominal Transfer</label>
+          <input type="text" id="trfNominal" class="form-control" placeholder="Contoh: 500.000" inputmode="numeric">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Dari Dompet</label>
+          <select id="trfDariDompet" class="form-select" onchange="updateTransferDetail('dari')">
+            <option value="Cash">💵 Cash</option>
+            <option value="M-Banking">🏦 M-Banking</option>
+            <option value="E-Wallet">📱 E-Wallet</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Detail Asal</label>
+          <select id="trfDariDetail" class="form-select"><option value="">-- Pilih --</option></select>
+        </div>
+        <div class="transfer-arrow">↓</div>
+        <div class="mb-3">
+          <label class="form-label">Ke Dompet</label>
+          <select id="trfKeDompet" class="form-select" onchange="updateTransferDetail('ke')">
+            <option value="Cash">💵 Cash</option>
+            <option value="M-Banking">🏦 M-Banking</option>
+            <option value="E-Wallet">📱 E-Wallet</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Detail Tujuan</label>
+          <select id="trfKeDetail" class="form-select"><option value="">-- Pilih --</option></select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Kepemilikan</label>
+          <select id="trfKepemilikan" class="form-select">
+            <option value="Ayah">Ayah</option>
+            <option value="Ibun">Ibun</option>
+            <option value="Izora">Izora</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Catatan</label>
+          <input type="text" id="trfCatatan" class="form-control" placeholder="Contoh: Transfer ke tabungan">
+        </div>
+        <button id="btnTransfer" class="btn-blue btn-transfer" onclick="simpanTransfer()">🔄 Pindah Dana</button>
       </div>
-
-      <div class="mb-3">
-        <label class="form-label">Deskripsi</label>
-        <input type="text" id="deskripsi" class="form-control" placeholder="Keterangan tambahan (opsional)">
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Kepemilikan</label>
-        <select id="kepemilikan" class="form-select">
-          <option value="Ayah">Ayah</option>
-          <option value="Ibun">Ibun</option>
-          <option value="Izora">Izora</option>
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Dompet</label>
-        <select id="dompet" class="form-select">
-          <option value="Cash">💵 Cash</option>
-          <option value="M-Banking">🏦 M-Banking</option>
-          <option value="E-Wallet">📱 E-Wallet</option>
-        </select>
-      </div>
-
-      <div class="mb-4">
-        <label class="form-label">Detail Dompet</label>
-        <select id="dompetDetail" class="form-select">
-          <option value="">-- Pilih --</option>
-        </select>
-      </div>
-
-      <button id="btnSimpan" class="btn-blue" onclick="simpanTransaksi()">
-        Simpan Transaksi
-      </button>
-
-      <div id="debugPanel"></div>
     </div>
 
-    <!-- ───────────────────────────────────────────
-         BALANCE CARD
-    ─────────────────────────────────────────────── -->
     <div class="balance">
       <div class="balance-label">Saldo Total</div>
       <div class="balance-amount" id="saldo">Rp 0</div>
-
       <div class="sub-balances">
-        <div class="sub-balance" onclick="toggleDetail('Cash')">
-          💵 Cash<span id="saldoCash">Rp 0</span>
-        </div>
-        <div class="sub-balance" onclick="toggleDetail('M-Banking')">
-          🏦 Bank<span id="saldoBank">Rp 0</span>
-        </div>
-        <div class="sub-balance" onclick="toggleDetail('E-Wallet')">
-          📱 Wallet<span id="saldoWallet">Rp 0</span>
-        </div>
+        <div class="sub-balance" onclick="toggleDetail('Cash')">💵 Cash<span id="saldoCash">Rp 0</span></div>
+        <div class="sub-balance" onclick="toggleDetail('M-Banking')">🏦 Bank<span id="saldoBank">Rp 0</span></div>
+        <div class="sub-balance" onclick="toggleDetail('E-Wallet')">📱 Wallet<span id="saldoWallet">Rp 0</span></div>
       </div>
-
-      <div class="detail-wrapper mt-3">
-        <div id="detailSaldoContainer"></div>
-      </div>
+      <div class="detail-wrapper mt-3"><div id="detailSaldoContainer"></div></div>
     </div>
 
-    <!-- ───────────────────────────────────────────
-         SUMMARY PENDAPATAN & PENGELUARAN
-    ─────────────────────────────────────────────── -->
     <div class="row g-3 mb-3">
       <div class="col-6">
-        <div class="summary-card">
-          <h6>📈 Pendapatan</h6>
-          <h3 class="income" id="totalPendapatan">Rp 0</h3>
-        </div>
+        <div class="summary-card"><h6>📈 Pendapatan</h6><h3 class="income" id="totalPendapatan">Rp 0</h3></div>
       </div>
       <div class="col-6">
-        <div class="summary-card">
-          <h6>📉 Pengeluaran</h6>
-          <h3 class="expense" id="totalPengeluaran">Rp 0</h3>
-        </div>
+        <div class="summary-card"><h6>📉 Pengeluaran</h6><h3 class="expense" id="totalPengeluaran">Rp 0</h3></div>
       </div>
     </div>
 
-    <!-- ───────────────────────────────────────────
-         NOTIFIKASI BANNER (tampil jika belum diberi izin)
-    ─────────────────────────────────────────────── -->
     <div id="notifBanner" class="notif-banner" style="display:none">
       <div class="notif-banner-icon">🔔</div>
       <div class="notif-banner-text">
         <strong>Aktifkan Notifikasi</strong>
-        <span>Terima notif transaksi & peringatan budget langsung di HP</span>
+        <span>Terima notif transaksi &amp; peringatan budget di HP</span>
       </div>
       <button onclick="askNotifPermission()">Izinkan</button>
     </div>
 
-    <!-- ───────────────────────────────────────────
-         BUDGET CARD
-    ─────────────────────────────────────────────── -->
     <div class="budget-card">
-      <h6>📊 Budget Pengeluaran Bulanan</h6>
-      <h4 id="budgetSisa">Rp 0</h4>
-      <div class="budget-progress">
-        <div class="budget-bar" id="budgetBar"></div>
-      </div>
+      <div class="budget-period" id="budgetPeriod"></div>
+      <h6>📊 Budget Pengeluaran</h6>
+      <h4 id="budgetSisa">—</h4>
+      <div class="budget-progress"><div class="budget-bar" id="budgetBar"></div></div>
       <div id="budgetWarning" class="budget-warning"></div>
       <div class="budget-input">
         <input type="text" id="budgetInput" placeholder="Set nominal budget..." inputmode="numeric">
         <button id="btnBudget" onclick="setBudget()">Set</button>
       </div>
-      <small>💡 Budget akan otomatis terakumulasi dari sisa bulan sebelumnya</small>
+      <small>💡 Periode gajian: tanggal 25 s/d 24 bulan berikutnya</small>
     </div>
 
-    <!-- ───────────────────────────────────────────
-         RIWAYAT TRANSAKSI
-    ─────────────────────────────────────────────── -->
     <div class="riwayat-title">📜 Riwayat Transaksi</div>
-
-    <!-- Filter & Export -->
     <div class="filter-export">
       <input type="text" id="filter" placeholder="🔍 Cari transaksi..." onkeyup="filterTable()" />
       <button class="btn-export" onclick="exportExcel()">📤 Export</button>
     </div>
-
-    <!-- Filter Tanggal -->
     <div class="tanggal-filter mt-2">
       <div class="d-flex w-100 gap-2 align-items-center">
         <input type="date" id="startDate" class="flex-fill" />
-        <input type="date" id="endDate" class="flex-fill" />
+        <input type="date" id="endDate"   class="flex-fill" />
         <button onclick="filterTanggal()">Filter</button>
       </div>
     </div>
-
-    <!-- List Riwayat -->
     <div class="riwayat-container" id="riwayatContainer">
       <p style="text-align:center;padding:24px;color:#9ca3af">Memuat data...</p>
     </div>
-
   </div>
 
-  <!-- FAB Tambah -->
-  <button class="fab-add" onclick="openModal()" aria-label="Tambah Transaksi">＋</button>
-
-  <!-- Apps JS -->
+  <button class="fab-add" onclick="openModal()" aria-label="Tambah">＋</button>
   <script src="app.js"></script>
 </body>
 </html>
