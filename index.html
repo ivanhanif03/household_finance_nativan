@@ -112,39 +112,59 @@
           <label class="form-label">Nominal Transfer</label>
           <input type="text" id="trfNominal" class="form-control" placeholder="Contoh: 500.000" inputmode="numeric">
         </div>
-        <div class="mb-3">
-          <label class="form-label">Dari Dompet</label>
-          <select id="trfDariDompet" class="form-select" onchange="updateTransferDetail('dari')">
-            <option value="Cash">💵 Cash</option>
-            <option value="M-Banking">🏦 M-Banking</option>
-            <option value="E-Wallet">📱 E-Wallet</option>
-          </select>
+
+        <!-- ASAL -->
+        <div style="background:#fafafa;border-radius:14px;padding:14px;border:1px solid #e5e7eb;margin-bottom:8px">
+          <div style="font-size:.72rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">📤 Dana Keluar Dari</div>
+          <div class="mb-3">
+            <label class="form-label">Kepemilikan Asal</label>
+            <select id="trfDariKepemilikan" class="form-select">
+              <option value="Ayah">Ayah</option>
+              <option value="Ibun">Ibun</option>
+              <option value="Izora">Izora</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Dompet Asal</label>
+            <select id="trfDariDompet" class="form-select" onchange="updateTransferDetail('dari')">
+              <option value="Cash">💵 Cash</option>
+              <option value="M-Banking">🏦 M-Banking</option>
+              <option value="E-Wallet">📱 E-Wallet</option>
+            </select>
+          </div>
+          <div class="mb-0">
+            <label class="form-label">Detail Dompet Asal</label>
+            <select id="trfDariDetail" class="form-select"><option value="">-- Pilih --</option></select>
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Detail Asal</label>
-          <select id="trfDariDetail" class="form-select"><option value="">-- Pilih --</option></select>
-        </div>
+
         <div class="transfer-arrow">↓</div>
-        <div class="mb-3">
-          <label class="form-label">Ke Dompet</label>
-          <select id="trfKeDompet" class="form-select" onchange="updateTransferDetail('ke')">
-            <option value="Cash">💵 Cash</option>
-            <option value="M-Banking">🏦 M-Banking</option>
-            <option value="E-Wallet">📱 E-Wallet</option>
-          </select>
+
+        <!-- TUJUAN -->
+        <div style="background:#fafafa;border-radius:14px;padding:14px;border:1px solid #e5e7eb;margin-bottom:16px">
+          <div style="font-size:.72rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">📥 Dana Masuk Ke</div>
+          <div class="mb-3">
+            <label class="form-label">Kepemilikan Tujuan</label>
+            <select id="trfKeKepemilikan" class="form-select">
+              <option value="Ayah">Ayah</option>
+              <option value="Ibun">Ibun</option>
+              <option value="Izora">Izora</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Dompet Tujuan</label>
+            <select id="trfKeDompet" class="form-select" onchange="updateTransferDetail('ke')">
+              <option value="Cash">💵 Cash</option>
+              <option value="M-Banking">🏦 M-Banking</option>
+              <option value="E-Wallet">📱 E-Wallet</option>
+            </select>
+          </div>
+          <div class="mb-0">
+            <label class="form-label">Detail Dompet Tujuan</label>
+            <select id="trfKeDetail" class="form-select"><option value="">-- Pilih --</option></select>
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Detail Tujuan</label>
-          <select id="trfKeDetail" class="form-select"><option value="">-- Pilih --</option></select>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Kepemilikan</label>
-          <select id="trfKepemilikan" class="form-select">
-            <option value="Ayah">Ayah</option>
-            <option value="Ibun">Ibun</option>
-            <option value="Izora">Izora</option>
-          </select>
-        </div>
+
         <div class="mb-4">
           <label class="form-label">Catatan</label>
           <input type="text" id="trfCatatan" class="form-control" placeholder="Contoh: Transfer ke tabungan">
@@ -161,7 +181,17 @@
         <div class="sub-balance" onclick="toggleDetail('M-Banking')">🏦 Bank<span id="saldoBank">Rp 0</span></div>
         <div class="sub-balance" onclick="toggleDetail('E-Wallet')">📱 Wallet<span id="saldoWallet">Rp 0</span></div>
       </div>
-      <div class="detail-wrapper mt-3"><div id="detailSaldoContainer"></div></div>
+    </div>
+
+    <!-- Detail Saldo Bottom Sheet -->
+    <div id="detailBackdrop" class="detail-backdrop" onclick="closeDetail()"></div>
+    <div id="detailSheet" class="detail-sheet">
+      <div class="detail-sheet-handle"></div>
+      <div class="detail-sheet-header">
+        <div class="detail-sheet-title" id="detailSheetTitle">Detail Saldo</div>
+        <button class="detail-sheet-close" onclick="closeDetail()">✕</button>
+      </div>
+      <div class="detail-sheet-body" id="detailSheetBody"></div>
     </div>
 
     <div class="row g-3 mb-3">
