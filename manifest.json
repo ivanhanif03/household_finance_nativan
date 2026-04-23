@@ -4,8 +4,8 @@
   "description": "Aplikasi Keuangan Rumah Tangga Nativan",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f4f7ff",
-  "theme_color": "#2563eb",
+  "background_color": "#eef2ff",
+  "theme_color": "#eef2ff",
   "orientation": "portrait-primary",
   "icons": [
     {
