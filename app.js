@@ -60,6 +60,48 @@ function showOverlayToast(msg="✅ Berhasil!", dur=1800) {
   setTimeout(() => { el.classList.remove("show"); _obBusy = false; }, dur);
 }
 
+// ─── SUCCESS NOTIFICATION (kekinian) ─────────────
+let _snTimer = null;
+function showSuccessNotif(icon, label, kategori, nominal, dur=3800) {
+  // Buat/reuse elemen
+  let el = document.getElementById("successNotif");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "successNotif";
+    el.className = "success-notif";
+    el.innerHTML = `
+      <div class="sn-icon-wrap"><div class="sn-icon" id="snIcon"></div></div>
+      <div class="sn-body">
+        <div class="sn-label"   id="snLabel"></div>
+        <div class="sn-kategori" id="snKategori"></div>
+        <div class="sn-nominal"  id="snNominal"></div>
+        <div class="sn-progress"><div class="sn-progress-bar" id="snBar"></div></div>
+      </div>`;
+    document.body.appendChild(el);
+  }
+
+  // Reset animasi progress bar
+  const bar = document.getElementById("snBar");
+  bar.style.animation = "none"; bar.offsetWidth;
+  bar.style.setProperty("--sn-dur", dur+"ms");
+  bar.style.animation = `sn-drain ${dur}ms linear forwards`;
+
+  document.getElementById("snIcon").textContent     = icon;
+  document.getElementById("snLabel").textContent    = label;
+  document.getElementById("snKategori").textContent = kategori;
+  document.getElementById("snNominal").innerHTML    = `<span>${formatRupiah(nominal)}</span>`;
+
+  el.classList.remove("hide","show");
+  el.offsetWidth;
+  el.classList.add("show");
+
+  if (_snTimer) clearTimeout(_snTimer);
+  _snTimer = setTimeout(() => {
+    el.classList.remove("show");
+    el.classList.add("hide");
+  }, dur);
+}
+
 // ─── CUSTOM ALERT ────────────────────────────────
 /**
  * showAlert({ icon, title, message, buttons: [{label, type, onClick}] })
@@ -234,9 +276,11 @@ async function simpanTransaksi() {
     showLoading(false);
 
     if (result.status === "OK") {
-      showOverlayToast("✅ Transaksi tersimpan!");
-      sendLocalNotif("💰 Transaksi Baru",
-        `${document.getElementById("jenis").value}: ${kategori} — ${formatRupiah(nominal)}`);
+      const jenis = document.getElementById("jenis").value;
+      const ikon  = jenis === "Pendapatan" ? "💰" : "💸";
+      const label = jenis === "Pendapatan" ? "Pendapatan Tercatat ✓" : "Pengeluaran Tercatat ✓";
+      showSuccessNotif(ikon, label, kategori, nominal);
+      sendLocalNotif("💰 Transaksi Baru", `${jenis}: ${kategori} — ${formatRupiah(nominal)}`);
       closeModal();
       document.getElementById("kategori").value  = "";
       document.getElementById("nominal").value   = "";
@@ -256,13 +300,14 @@ async function simpanTransaksi() {
 
 // ─── PINDAH DANA (TRANSFER) ──────────────────────
 async function simpanTransfer() {
-  const nominal      = document.getElementById("trfNominal").value.replace(/\./g,"");
-  const dariDompet   = document.getElementById("trfDariDompet").value;
-  const dariDetail   = document.getElementById("trfDariDetail").value;
-  const keDompet     = document.getElementById("trfKeDompet").value;
-  const keDetail     = document.getElementById("trfKeDetail").value;
-  const kepemilikan  = document.getElementById("trfKepemilikan").value;
-  const catatan      = document.getElementById("trfCatatan").value.trim();
+  const nominal         = document.getElementById("trfNominal").value.replace(/\./g,"");
+  const dariKepemilikan = document.getElementById("trfDariKepemilikan").value;
+  const dariDompet      = document.getElementById("trfDariDompet").value;
+  const dariDetail      = document.getElementById("trfDariDetail").value;
+  const keKepemilikan   = document.getElementById("trfKeKepemilikan").value;
+  const keDompet        = document.getElementById("trfKeDompet").value;
+  const keDetail        = document.getElementById("trfKeDetail").value;
+  const catatan         = document.getElementById("trfCatatan").value.trim();
 
   if (!nominal) {
     showAlert({ icon:"⚠️", title:"Nominal Kosong", message:"Masukkan nominal yang ingin dipindahkan.", buttons:[{label:"OK", type:"primary"}] });
@@ -276,8 +321,8 @@ async function simpanTransfer() {
     showAlert({ icon:"⚠️", title:"Pilih Tujuan", message:"Pilih detail dompet tujuan dana.", buttons:[{label:"OK", type:"primary"}] });
     return;
   }
-  if (dariDompet === keDompet && dariDetail === keDetail) {
-    showAlert({ icon:"⚠️", title:"Dompet Sama", message:"Dompet asal dan tujuan tidak boleh sama.", buttons:[{label:"OK", type:"primary"}] });
+  if (dariDompet===keDompet && dariDetail===keDetail && dariKepemilikan===keKepemilikan) {
+    showAlert({ icon:"⚠️", title:"Sama Persis", message:"Dompet asal dan tujuan tidak boleh sama persis.", buttons:[{label:"OK", type:"primary"}] });
     return;
   }
 
@@ -287,24 +332,21 @@ async function simpanTransfer() {
 
   try {
     const result = await gasCall({
-      action:      "addTransfer",
+      action: "addTransfer",
       nominal,
-      dariDompet,
-      dariDetail,
-      keDompet,
-      keDetail,
-      kepemilikan,
+      dariKepemilikan, dariDompet, dariDetail,
+      keKepemilikan,   keDompet,   keDetail,
       catatan,
     });
 
     showLoading(false);
 
     if (result.status === "OK") {
-      showOverlayToast("🔄 Dana berhasil dipindahkan!");
+      showSuccessNotif("🔄", "Pindah Dana", `${dariKepemilikan}→${keKepemilikan} • ${dariDetail} → ${keDetail}`, nominal);
       sendLocalNotif("🔄 Pindah Dana", `${dariDetail} → ${keDetail}: ${formatRupiah(nominal)}`);
       closeModal();
-      document.getElementById("trfNominal").value  = "";
-      document.getElementById("trfCatatan").value  = "";
+      document.getElementById("trfNominal").value = "";
+      document.getElementById("trfCatatan").value = "";
       await wait(800);
       loadData();
     } else {
@@ -322,7 +364,7 @@ async function simpanTransfer() {
 async function setBudget() {
   const val = document.getElementById("budgetInput").value.replace(/\./g,"");
   if (!val) {
-    showAlert({ icon:"⚠️", title:"Nominal Kosong", message:"Masukkan nominal budget bulanan terlebih dahulu.", buttons:[{label:"OK", type:"primary"}] });
+    showAlert({ icon:"⚠️", title:"Nominal Kosong", message:"Masukkan nominal budget terlebih dahulu.", buttons:[{label:"OK", type:"primary"}] });
     return;
   }
 
@@ -334,16 +376,19 @@ async function setBudget() {
 
   try {
     const result = await gasCall({
-      action: "setBudget",
-      periodeKey: key,
+      action:       "setBudget",
+      periodeKey:   key,
       periodeLabel: periode.label,
+      // backward-compat dengan GAS lama yang pakai bulan/tahun
+      bulan:  periode.start.getMonth() + 1,
+      tahun:  periode.start.getFullYear(),
       budget: val,
     });
 
     showLoading(false);
 
     if (result.status === "OK") {
-      showOverlayToast("✅ Budget tersimpan!");
+      showSuccessNotif("📊", "Budget Tersimpan ✓", periode.label, val);
       await wait(800);
       loadData();
     } else {
@@ -458,33 +503,71 @@ function updateBudget() {
   }
 }
 
-// ─── TOGGLE DETAIL SALDO ─────────────────────────
-let detailOpen = null;
+// ─── TOGGLE DETAIL SALDO (bottom sheet) ──────────
+const avatarMap = { Ayah:"👨", Ibun:"👩", Izora:"👧" };
+const avatarBg  = { Ayah:"#dbeafe", Ibun:"#fce7f3", Izora:"#fef9c3" };
+const avatarColor = { Ayah:"#1e40af", Ibun:"#9d174d", Izora:"#713f12" };
+
 function toggleDetail(tipe) {
-  const cont = document.getElementById("detailSaldoContainer");
-  if (detailOpen === tipe) { cont.style.height="0"; detailOpen=null; return; }
-  cont.innerHTML = "";
+  const ikon  = { Cash:"💵", "M-Banking":"🏦", "E-Wallet":"📱" }[tipe] || "💰";
+  const title = document.getElementById("detailSheetTitle");
+  const body  = document.getElementById("detailSheetBody");
+  title.textContent = `${ikon} Detail ${tipe}`;
+  body.innerHTML    = "";
+
   const df = semuaData.filter(t => t.dompet === tipe);
+
   if (!df.length) {
-    cont.innerHTML = `<p style="text-align:center;color:white;padding:10px">Tidak ada data ${tipe}</p>`;
+    body.innerHTML = `<div style="text-align:center;padding:40px;color:#9ca3af"><div style="font-size:2.5rem;margin-bottom:8px">🪹</div><p>Belum ada transaksi di ${tipe}</p></div>`;
   } else {
-    const sum = {};
+    // Kelompokkan per dompetDetail, lalu per kepemilikan
+    const byDetail = {};
     df.forEach(t => {
-      const key = `${t.kepemilikan} – ${t.dompetDetail}`;
-      const n   = Number(String(t.nominal).replace(/\./g,"")) || 0;
-      const j   = String(t.jenis||"").toLowerCase();
-      sum[key]  = (sum[key]||0) + (j==="pendapatan"||j==="transfer-masuk" ? n : -n);
+      const det = t.dompetDetail || "Tidak Ada";
+      if (!byDetail[det]) byDetail[det] = {};
+      const prs = t.kepemilikan || "Umum";
+      if (!byDetail[det][prs]) byDetail[det][prs] = 0;
+      const n = Number(String(t.nominal).replace(/\./g,"")) || 0;
+      const j = String(t.jenis||"").toLowerCase();
+      byDetail[det][prs] += (j==="pendapatan"||j==="transfer-masuk") ? n : -n;
     });
-    Object.entries(sum).forEach(([k,v]) => {
-      const c = document.createElement("div");
-      c.className = "summary-card mb-2";
-      c.innerHTML = `<h6>${k}</h6><h3>${formatRupiah(v)}</h3>`;
-      cont.appendChild(c);
+
+    Object.entries(byDetail).forEach(([det, persons]) => {
+      const groupTotal = Object.values(persons).reduce((a,b)=>a+b,0);
+      const g = document.createElement("div");
+      g.className = "detail-wallet-group";
+      g.innerHTML = `<div class="detail-wallet-label">${det}</div>`;
+
+      Object.entries(persons).forEach(([prs, val]) => {
+        const row = document.createElement("div");
+        row.className = "detail-person-row";
+        row.innerHTML = `
+          <div class="detail-person-info">
+            <div class="detail-person-avatar" style="background:${avatarBg[prs]||"#f3f4f6"};color:${avatarColor[prs]||"#374151"}">${avatarMap[prs]||"👤"}</div>
+            <div>
+              <div class="detail-person-name">${prs}</div>
+              <div class="detail-person-sub">${det}</div>
+            </div>
+          </div>
+          <div class="detail-person-amount ${val>=0?"positive":"negative"}">${val<0?"- ":""}${formatRupiah(Math.abs(val))}</div>`;
+        g.appendChild(row);
+      });
+
+      const totalRow = document.createElement("div");
+      totalRow.className = "detail-total-row";
+      totalRow.innerHTML = `<span class="detail-total-label">Total ${det}</span><span class="detail-total-amount">${formatRupiah(groupTotal)}</span>`;
+      g.appendChild(totalRow);
+      body.appendChild(g);
     });
   }
-  cont.style.display = "block";
-  cont.style.height  = cont.scrollHeight + "px";
-  detailOpen = tipe;
+
+  document.getElementById("detailBackdrop").classList.add("show");
+  document.getElementById("detailSheet").classList.add("show");
+}
+
+function closeDetail() {
+  document.getElementById("detailBackdrop").classList.remove("show");
+  document.getElementById("detailSheet").classList.remove("show");
 }
 
 // ─── RENDER RIWAYAT ──────────────────────────────
