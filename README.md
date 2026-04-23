@@ -151,6 +151,13 @@ Kepemilikan transaksi bisa diubah di `index.html` pada elemen `<select id="kepem
 
 ---
 
+## 📱 Screenshoot App
+<img width="389" height="849" alt="image" src="https://github.com/user-attachments/assets/c5217b14-dbcd-49d4-ae75-bcaec773dc38" />
+<img width="389" height="848" alt="image" src="https://github.com/user-attachments/assets/9edc9d0d-14b4-4b83-90cd-454b1b244870" />
+<img width="389" height="844" alt="image" src="https://github.com/user-attachments/assets/496b7834-43ff-44ef-bdf3-0f98672ec946" />
+
+---
+
 ## 📝 Lisensi
 
 Proyek pribadi — Keluarga Nativan 🏠
