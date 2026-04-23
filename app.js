@@ -14,6 +14,17 @@ let semuaData     = [];
 let semuaBudget   = [];
 let lastBudgetPct = 0;
 
+// Jalankan langsung saat app.js load
+(function() {
+  let meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    document.head.appendChild(meta);
+  }
+  meta.setAttribute('content', '#eef2ff');
+})();
+
 // ─── GAS API (GET-only, CORS-safe) ───────────────
 async function gasCall(params) {
   const url = SCRIPT_URL + "?" + new URLSearchParams({ ...params, _t: Date.now() });
