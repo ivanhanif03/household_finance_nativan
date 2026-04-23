@@ -55,8 +55,8 @@ Buat spreadsheet baru dengan **2 sheet**:
 **Sheet: `Budget`**
 | Kolom | Isi |
 |-------|-----|
-| A | Bulan |
-| B | Tahun |
+| A | periodeKey |
+| B | periodeLabel |
 | C | Budget |
 | D | Realisasi |
 
