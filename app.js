@@ -8,7 +8,7 @@
 // ─── CONFIG ──────────────────────────────────────────
 const SCRIPT_URL      = "https://script.google.com/macros/s/AKfycbx85BqK5LKIzJd9xoxiMkoViIsxBZqYaCJ7cKHhIprcDx6TWVXzyiznYQCvExSjzhRJ/exec";
 const APP_PASSWORD    = "nativan300424";
-const ONESIGNAL_APPID = "6f25ad6c-97c1-444a-9869-951998adc9e2"; // ← isi setelah daftar onesignal.com
+const ONESIGNAL_APPID = "GANTI_DENGAN_APP_ID_ONESIGNAL_KAMU"; // ← isi setelah daftar onesignal.com
 
 // ─── CACHE CONFIG ────────────────────────────────────
 const CACHE_KEY = "nativan_v5_cache";
@@ -686,39 +686,39 @@ function _checkNotifState() {
   updateNotifBanner(true, "ask");
 }
 
-// Minta izin — coba OneSignal dulu, fallback ke native
+// Minta izin — native dulu (langsung jalan saat diklik), lalu OneSignal subscribe
 async function askNotifPermission() {
-  if (_hasOneSignal()) {
-    // Pakai OneSignal prompt
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      try {
-        await OneSignal.Slidedown.promptPush();
-        const perm = await OneSignal.Notifications.permission;
-        if (perm) {
-          updateNotifBanner(false);
-          showToast("Notifikasi diaktifkan! Kamu akan dapat notif bahkan saat app tertutup 🔔", "success", 4000);
-        }
-      } catch(e) {
-        // Fallback ke native jika OneSignal gagal
-        _askNativePermission();
-      }
-    });
-  } else {
-    // Tidak pakai OneSignal → langsung minta native permission
-    _askNativePermission();
+  if (!("Notification" in window)) {
+    showToast("Browser kamu tidak mendukung notifikasi", "warning");
+    return;
   }
-}
 
-async function _askNativePermission() {
-  if (!("Notification" in window)) return;
+  // Native requestPermission — ini yang harus dipanggil langsung dari user gesture (klik tombol)
   const perm = await Notification.requestPermission();
+
   if (perm === "granted") {
     updateNotifBanner(false);
-    showToast("Notifikasi diaktifkan! 🔔 Kamu akan dapat notif saat ada transaksi baru.", "success", 4000);
+    showToast(
+      _hasOneSignal()
+        ? "🔔 Notifikasi aktif! Kamu akan dapat notif bahkan saat app tertutup."
+        : "🔔 Notifikasi aktif! Kamu akan dapat notif saat app terbuka.",
+      "success", 4500
+    );
+
+    // Jika OneSignal tersedia, daftarkan juga untuk background push
+    if (_hasOneSignal() && window.OneSignalDeferred) {
+      try {
+        OneSignalDeferred.push(async function(OneSignal) {
+          await OneSignal.User.PushSubscription.optIn();
+        });
+      } catch(e) {
+        console.warn("[OneSignal optIn]", e);
+      }
+    }
+
   } else if (perm === "denied") {
     updateNotifBanner(true, "denied");
-    showToast("Notifikasi diblokir. Aktifkan manual di pengaturan browser.", "warning", 5000);
+    showToast("Notifikasi diblokir. Ubah di pengaturan browser.", "warning", 5000);
   }
 }
 
