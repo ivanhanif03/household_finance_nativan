@@ -177,7 +177,13 @@ body {
   transform: translateY(0) scale(1);
 }
 .toast-icon { font-size: 1rem; flex-shrink: 0; }
-.toast-msg  { flex: 1; }
+.toast-msg {
+  flex: 1;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  min-width: 0; /* penting! supaya flex item bisa menyusut */
+}
 
 /* Warna per tipe */
 .toast.info    { background: rgba(31,41,55,.82); }
