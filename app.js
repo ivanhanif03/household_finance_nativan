@@ -624,6 +624,8 @@ function checkPassword() {
     localStorage.setItem("login_nativan", JSON.stringify({status:true, time:Date.now()}));
     document.getElementById("loginScreen").style.display="none";
     loadData(true);
+    // Tunda sedikit agar splash tidak tabrakan dengan banner
+    setTimeout(_checkNotifState, 2500);
   } else {
     const el=document.getElementById("loginError");
     el.textContent="❌ Password salah, coba lagi";
@@ -631,53 +633,145 @@ function checkPassword() {
   }
 }
 
-// ─── ONESIGNAL PUSH NOTIFICATION ─────────────────────
+// ─── PUSH NOTIFICATION SYSTEM ────────────────────────
+// Mode 1: OneSignal (background push, saat app tertutup)
+// Mode 2: Native Web Notification API (fallback, saat app terbuka)
+// Keduanya jalan bersamaan jika OneSignal dikonfigurasi
+
+const _hasOneSignal = () =>
+  ONESIGNAL_APPID !== "GANTI_DENGAN_APP_ID_ONESIGNAL_KAMU" &&
+  ONESIGNAL_APPID !== "" && ONESIGNAL_APPID.length > 10;
+
+// Init OneSignal (hanya jika App ID sudah diisi)
 function _initOneSignal() {
-  if (ONESIGNAL_APPID === "GANTI_DENGAN_APP_ID_ONESIGNAL_KAMU") return;
+  if (!_hasOneSignal()) return;
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: ONESIGNAL_APPID,
-      notifyButton: { enable: false }, // kita pakai banner sendiri
-      promptOptions: {
-        slidedown: { prompts: [{ type:"push", autoPrompt:false }] }
+    try {
+      await OneSignal.init({
+        appId: ONESIGNAL_APPID,
+        notifyButton: { enable: false },
+        promptOptions: {
+          slidedown: { prompts: [{ type:"push", autoPrompt:false }] }
+        }
+      });
+      const perm = await OneSignal.Notifications.permission;
+      if (perm) updateNotifBanner(false);
+    } catch(e) {
+      console.warn("[OneSignal init]", e);
+    }
+  });
+}
+
+// Cek & tampilkan banner notifikasi
+// Dipanggil setelah login — selalu cek state permission
+function _checkNotifState() {
+  if (!("Notification" in window)) {
+    updateNotifBanner(false); // browser tidak support, sembunyikan
+    return;
+  }
+
+  if (Notification.permission === "granted") {
+    updateNotifBanner(false); // sudah izin, sembunyikan banner
+    return;
+  }
+
+  if (Notification.permission === "denied") {
+    // Diblokir — tampilkan banner info cara buka di settings
+    updateNotifBanner(true, "denied");
+    return;
+  }
+
+  // "default" — belum diminta, tampilkan banner ajakan
+  updateNotifBanner(true, "ask");
+}
+
+// Minta izin — coba OneSignal dulu, fallback ke native
+async function askNotifPermission() {
+  if (_hasOneSignal()) {
+    // Pakai OneSignal prompt
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      try {
+        await OneSignal.Slidedown.promptPush();
+        const perm = await OneSignal.Notifications.permission;
+        if (perm) {
+          updateNotifBanner(false);
+          showToast("Notifikasi diaktifkan! Kamu akan dapat notif bahkan saat app tertutup 🔔", "success", 4000);
+        }
+      } catch(e) {
+        // Fallback ke native jika OneSignal gagal
+        _askNativePermission();
       }
     });
-    // Cek permission
-    const perm = await OneSignal.Notifications.permission;
-    updateNotifBanner(!perm);
-  });
-}
-
-async function askNotifPermission() {
-  if (ONESIGNAL_APPID === "GANTI_DENGAN_APP_ID_ONESIGNAL_KAMU") {
-    showToast("OneSignal App ID belum diisi di app.js", "warning"); return;
-  }
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.Slidedown.promptPush();
-    const perm = await OneSignal.Notifications.permission;
-    updateNotifBanner(!perm);
-    if (perm) showToast("🔔 Notifikasi berhasil diaktifkan!", "success");
-  });
-}
-
-// Lokal notification (saat app terbuka)
-function _sendLocalNotif(title, body) {
-  if (!("Notification" in window) || Notification.permission!=="granted") return;
-  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-    navigator.serviceWorker.ready.then(reg => {
-      reg.showNotification(title, { body, icon:"assets/icons/icon-192.png", vibrate:[200,100,200] });
-    });
   } else {
-    new Notification(title, { body, icon:"assets/icons/icon-192.png" });
+    // Tidak pakai OneSignal → langsung minta native permission
+    _askNativePermission();
   }
 }
 
-function updateNotifBanner(show) {
-  const banner=document.getElementById("notifBanner");
-  if (!banner) return;
-  banner.style.display = show ? "flex" : "none";
+async function _askNativePermission() {
+  if (!("Notification" in window)) return;
+  const perm = await Notification.requestPermission();
+  if (perm === "granted") {
+    updateNotifBanner(false);
+    showToast("Notifikasi diaktifkan! 🔔 Kamu akan dapat notif saat ada transaksi baru.", "success", 4000);
+  } else if (perm === "denied") {
+    updateNotifBanner(true, "denied");
+    showToast("Notifikasi diblokir. Aktifkan manual di pengaturan browser.", "warning", 5000);
+  }
 }
+
+// Update tampilan banner notifikasi
+function updateNotifBanner(show, state = "ask") {
+  const banner = document.getElementById("notifBanner");
+  if (!banner) return;
+
+  if (!show) {
+    banner.style.display = "none";
+    return;
+  }
+
+  if (state === "denied") {
+    banner.style.display = "flex";
+    banner.style.background = "linear-gradient(135deg, #6b7280, #4b5563)";
+    banner.querySelector(".notif-banner-text strong").textContent = "Notifikasi Diblokir";
+    banner.querySelector(".notif-banner-text span").textContent   = "Aktifkan di pengaturan browser untuk terima notif";
+    banner.querySelector("button").style.display = "none";
+  } else {
+    banner.style.display = "flex";
+    banner.style.background = "";
+    banner.querySelector(".notif-banner-text strong").textContent = "Aktifkan Notifikasi";
+    banner.querySelector(".notif-banner-text span").textContent =
+      _hasOneSignal()
+        ? "Terima notif transaksi bahkan saat app tertutup 🔔"
+        : "Terima notif transaksi saat app terbuka 🔔";
+    const btn = banner.querySelector("button");
+    btn.style.display = "";
+    btn.textContent   = "Izinkan";
+  }
+}
+
+// Kirim notifikasi lokal (saat app terbuka / foreground)
+function _sendLocalNotif(title, body) {
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+  const options = {
+    body,
+    icon:    "assets/icons/icon-192.png",
+    badge:   "assets/icons/icon-192.png",
+    vibrate: [200, 100, 200],
+    tag:     "nativan-" + Date.now(),
+    data:    { url: window.location.href }
+  };
+
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options));
+  } else {
+    new Notification(title, options);
+  }
+}
+
 
 // ─── INIT ─────────────────────────────────────────────
 window.addEventListener("load", () => {
@@ -689,6 +783,7 @@ window.addEventListener("load", () => {
       if (Date.now()-sess.time < 3600000) {
         document.getElementById("loginScreen").style.display="none";
         loadData(true);
+        setTimeout(_checkNotifState, 2500);
       } else { localStorage.removeItem("login_nativan"); }
     } catch(_) { localStorage.removeItem("login_nativan"); }
   }
