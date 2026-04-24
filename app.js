@@ -40,14 +40,25 @@ const capitalizeFirst = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerC
 
 // ─── TOAST ───────────────────────────────────────
 function showToast(msg, duration=3500, type="info") {
+  const icons = { info:"💬", success:"✅", error:"🚨", warning:"⚠️" };
   const wrap  = document.getElementById("toastContainer");
+
   const toast = document.createElement("div");
-  toast.className   = "toast " + type;
-  toast.textContent = msg;
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <span class="toast-icon">${icons[type] || "💬"}</span>
+    <span class="toast-msg">${msg}</span>
+  `;
   wrap.appendChild(toast);
-  requestAnimationFrame(() => toast.classList.add("show"));
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => toast.classList.add("show"));
+  });
+
   setTimeout(() => {
-    toast.classList.remove("show");
+    toast.style.transition = "opacity .3s ease, transform .3s ease";
+    toast.style.opacity    = "0";
+    toast.style.transform  = "translateY(-10px) scale(.9)";
     toast.addEventListener("transitionend", () => toast.remove(), {once:true});
   }, duration);
 }
