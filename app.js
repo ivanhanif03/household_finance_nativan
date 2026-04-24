@@ -8,7 +8,7 @@
 // ─── CONFIG ──────────────────────────────────────────
 const SCRIPT_URL      = "https://script.google.com/macros/s/AKfycbx85BqK5LKIzJd9xoxiMkoViIsxBZqYaCJ7cKHhIprcDx6TWVXzyiznYQCvExSjzhRJ/exec";
 const APP_PASSWORD    = "nativan300424";
-const ONESIGNAL_APPID = "GANTI_DENGAN_APP_ID_ONESIGNAL_KAMU"; // ← isi setelah daftar onesignal.com
+const ONESIGNAL_APPID = "6f25ad6c-97c1-444a-9869-951998adc9e2"; // ← isi setelah daftar onesignal.com
 
 // ─── CACHE CONFIG ────────────────────────────────────
 const CACHE_KEY = "nativan_v5_cache";
