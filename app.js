@@ -6,7 +6,7 @@
 ===================================================== */
 
 // ─── CONFIG ──────────────────────────────────────────
-const SCRIPT_URL      = "https://script.google.com/macros/s/AKfycbx85BqK5LKIzJd9xoxiMkoViIsxBZqYaCJ7cKHhIprcDx6TWVXzyiznYQCvExSjzhRJ/exec";
+const SCRIPT_URL      = "https://script.google.com/macros/s/AKfycbwFIjzsnWDjjvyJPlE_cO5PSampIlqgI2IOY61YUqCTGZbaph1gSqYqb6Bhm9U84AE/exec";
 const APP_PASSWORD    = "nativan300424";
 const ONESIGNAL_APPID = "6f25ad6c-97c1-444a-9869-951998adc9e2"; // ← isi setelah daftar onesignal.com
 
