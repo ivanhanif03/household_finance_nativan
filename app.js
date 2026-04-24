@@ -619,17 +619,29 @@ function switchModalTab(tab) {
 
 // ─── LOGIN ────────────────────────────────────────────
 function checkPassword() {
-  const v=document.getElementById("passwordInput").value;
-  if (v===APP_PASSWORD) {
+  const v = document.getElementById("passwordInput").value;
+  if (v === APP_PASSWORD) {
     localStorage.setItem("login_nativan", JSON.stringify({status:true, time:Date.now()}));
-    document.getElementById("loginScreen").style.display="none";
+    document.getElementById("loginScreen").style.display = "none";
     loadData(true);
-    // Tunda sedikit agar splash tidak tabrakan dengan banner
-    setTimeout(_checkNotifState, 2500);
+    
+    // Paksa OneSignal minta izin segera setelah login
+    setTimeout(() => {
+      if (_hasOneSignal() && window.OneSignalDeferred) {
+        OneSignalDeferred.push(async os => {
+          const subscribed = await os.User.PushSubscription.optedIn;
+          if (!subscribed) {
+            await os.Notifications.requestPermission();
+          }
+        });
+      }
+      _checkNotifState();
+    }, 1500);
+
   } else {
-    const el=document.getElementById("loginError");
-    el.textContent="❌ Password salah, coba lagi";
-    el.style.animation="none"; el.offsetWidth; el.style.animation="bounceIn .3s ease";
+    const el = document.getElementById("loginError");
+    el.textContent = "❌ Password salah, coba lagi";
+    el.style.animation = "none"; el.offsetWidth; el.style.animation = "bounceIn .3s ease";
   }
 }
 
