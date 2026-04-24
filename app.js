@@ -43,11 +43,14 @@ function showToast(msg, duration=3500, type="info") {
   const icons = { info:"💬", success:"✅", error:"🚨", warning:"⚠️" };
   const wrap  = document.getElementById("toastContainer");
 
+  // Hapus emoji di awal pesan supaya tidak double
+  const cleanMsg = msg.replace(/^[\u{1F300}-\u{1FAFF}\u{2600}-\u{27FF}\s]+/u, "").trim();
+
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
   toast.innerHTML = `
     <span class="toast-icon">${icons[type] || "💬"}</span>
-    <span class="toast-msg">${msg}</span>
+    <span class="toast-msg">${cleanMsg}</span>
   `;
   wrap.appendChild(toast);
 
