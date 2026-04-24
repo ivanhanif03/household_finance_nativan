@@ -652,7 +652,7 @@ function _initOneSignal() {
         appId: ONESIGNAL_APPID,
         notifyButton: { enable: false },
         promptOptions: {
-          slidedown: { prompts: [{ type:"push", autoPrompt:false }] }
+          slidedown: { prompts: [{ type:"push", autoPrompt:true }] }
         }
       });
       const perm = await OneSignal.Notifications.permission;
