@@ -3,52 +3,16 @@
    - OneSignal background push notification
    - localStorage cache (instant load)
    - Toast UI premium
+   - Password validasi di server (GAS)
 ===================================================== */
 
 // ─── CONFIG ──────────────────────────────────────────
-const SCRIPT_URL      = "https://script.google.com/macros/s/AKfycbwFIjzsnWDjjvyJPlE_cO5PSampIlqgI2IOY61YUqCTGZbaph1gSqYqb6Bhm9U84AE/exec";
-const ONESIGNAL_APPID = "6f25ad6c-97c1-444a-9869-951998adc9e2"; // ← isi setelah daftar onesignal.com
-async function checkPassword() {
-  const v = document.getElementById("passwordInput").value;
-  if (!v) return;
-
-  const btn = document.querySelector(".btn-login");
-  btn.disabled = true;
-  btn.textContent = "Memeriksa...";
-
-  try {
-    const result = await gasCall({ action: "checkPassword", pwd: v });
-    if (result.status === "OK") {
-      localStorage.setItem("login_nativan", JSON.stringify({status:true, time:Date.now()}));
-      document.getElementById("loginScreen").style.display = "none";
-      loadData(true);
-      setTimeout(() => {
-        if (_hasOneSignal() && window.OneSignalDeferred) {
-          OneSignalDeferred.push(async os => {
-            const subscribed = await os.User.PushSubscription.optedIn;
-            if (!subscribed) await os.Notifications.requestPermission();
-          });
-        }
-        _checkNotifState();
-      }, 1500);
-    } else {
-      const el = document.getElementById("loginError");
-      el.textContent = "❌ Password salah, coba lagi";
-      el.style.animation = "none"; el.offsetWidth;
-      el.style.animation = "bounceIn .3s ease";
-    }
-  } catch(err) {
-    const el = document.getElementById("loginError");
-    el.textContent = "❌ Koneksi bermasalah, coba lagi";
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Masuk →";
-  }
-}
+const SCRIPT_URL      = "https://script.google.com/macros/s/AKfycbwvEjH_psFLzVyH7u6vFOEIoXtuW4HIx5KoiQ75waGHdVZZQNklvr0jUMCasKwtnWdO/exec";
+const ONESIGNAL_APPID = "6f25ad6c-97c1-444a-9869-951998adc9e2";
 
 // ─── CACHE CONFIG ────────────────────────────────────
 const CACHE_KEY = "nativan_v5_cache";
-const CACHE_TTL = 3 * 60 * 1000; // 3 menit — setelah itu refresh otomatis
+const CACHE_TTL = 3 * 60 * 1000; // 3 menit
 
 // ─── STATE ───────────────────────────────────────────
 let semuaData     = [];
@@ -78,7 +42,7 @@ function getCache() {
     const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
     const { ts, data } = JSON.parse(raw);
-    if (Date.now() - ts > CACHE_TTL) return null; // expired
+    if (Date.now() - ts > CACHE_TTL) return null;
     return data;
   } catch(_) { return null; }
 }
@@ -91,12 +55,11 @@ function applyData(data) {
   renderRiwayat(filter3HariTerakhir(semuaData));
 }
 
-// ─── LOAD DATA (cache-first, then background refresh) ─
+// ─── LOAD DATA ───────────────────────────────────────
 async function loadData(withSplash = false) {
   const cached = getCache();
 
   if (cached) {
-    // ✅ Ada cache → tampil INSTAN, refresh di background
     if (withSplash) {
       showSplash();
       setSplash(60, "Memuat data tersimpan...");
@@ -108,12 +71,10 @@ async function loadData(withSplash = false) {
     } else {
       applyData(cached);
     }
-    // Background refresh tanpa loading indicator
     _bgRefresh();
     return;
   }
 
-  // ❌ Tidak ada cache → fetch penuh dengan splash
   if (withSplash) {
     showSplash();
     await wait(200);
@@ -141,21 +102,16 @@ async function loadData(withSplash = false) {
   if (!withSplash) showLoading(false);
 }
 
-// Background refresh — update cache & UI tanpa ganggu user
 async function _bgRefresh() {
   if (_bgRefreshing) return;
   _bgRefreshing = true;
   try {
     const data = await gasCall({ action:"getData" });
-    if (data.status === "OK") {
-      saveCache(data);
-      applyData(data);
-    }
-  } catch(_) { /* silent */ }
+    if (data.status === "OK") { saveCache(data); applyData(data); }
+  } catch(_) {}
   _bgRefreshing = false;
 }
 
-// Force refresh (dipakai setelah simpan transaksi)
 async function refreshData() {
   showLoading(true);
   try {
@@ -181,7 +137,7 @@ const formatTanggal = t => {
 
 const capitalizeFirst = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 
-// ─── TOAST SYSTEM (premium) ──────────────────────────
+// ─── TOAST SYSTEM ────────────────────────────────────
 const TOAST_ICONS = { success:"✅", error:"❌", warning:"⚡", info:"ℹ️" };
 const TOAST_TYPES = { success:"t-success", error:"t-error", warning:"t-warning", info:"t-info" };
 let _toastCount = 0;
@@ -219,7 +175,7 @@ function dismissToast(id) {
   setTimeout(() => el.remove(), 300);
 }
 
-// ─── SUCCESS NOTIFICATION (transaksi berhasil) ────────
+// ─── SUCCESS NOTIFICATION ────────────────────────────
 let _snTimer = null;
 function showSuccessNotif(icon, label, detail, nominal, dur = 4000) {
   let el = document.getElementById("successNotif");
@@ -269,7 +225,7 @@ function dismissSuccessNotif() {
   el.classList.add("sn-hide");
 }
 
-// ─── OVERLAY TOAST (legacy, dipakai splash) ──────────
+// ─── OVERLAY TOAST ───────────────────────────────────
 let _obBusy = false;
 function showOverlayToast(msg = "✅ Berhasil!", dur = 1800) {
   if (_obBusy) return; _obBusy = true;
@@ -278,7 +234,7 @@ function showOverlayToast(msg = "✅ Berhasil!", dur = 1800) {
   setTimeout(() => { el.classList.remove("show"); _obBusy = false; }, dur);
 }
 
-// ─── CUSTOM ALERT ─────────────────────────────────────
+// ─── CUSTOM ALERT ────────────────────────────────────
 function showAlert({ icon="ℹ️", title="", message="", buttons=[] }) {
   document.getElementById("alertIconWrap").textContent = icon;
   document.getElementById("alertTitle").textContent    = title;
@@ -351,7 +307,6 @@ async function simpanTransaksi() {
         jenis==="Pendapatan" ? "Pendapatan Tercatat ✓" : "Pengeluaran Tercatat ✓",
         kategori, nominal
       );
-      // Invalidate cache agar refresh dapat data terbaru
       localStorage.removeItem(CACHE_KEY);
       await wait(600);
       refreshData();
@@ -654,43 +609,49 @@ function switchModalTab(tab) {
 }
 
 // ─── LOGIN ────────────────────────────────────────────
-function checkPassword() {
+async function checkPassword() {
   const v = document.getElementById("passwordInput").value;
-  if (v === APP_PASSWORD) {
-    localStorage.setItem("login_nativan", JSON.stringify({status:true, time:Date.now()}));
-    document.getElementById("loginScreen").style.display = "none";
-    loadData(true);
-    
-    // Paksa OneSignal minta izin segera setelah login
-    setTimeout(() => {
-      if (_hasOneSignal() && window.OneSignalDeferred) {
-        OneSignalDeferred.push(async os => {
-          const subscribed = await os.User.PushSubscription.optedIn;
-          if (!subscribed) {
-            await os.Notifications.requestPermission();
-          }
-        });
-      }
-      _checkNotifState();
-    }, 1500);
+  if (!v) return;
 
-  } else {
+  const btn = document.querySelector(".btn-login");
+  btn.disabled = true;
+  btn.textContent = "Memeriksa...";
+
+  try {
+    const result = await gasCall({ action: "checkPassword", pwd: v });
+    if (result.status === "OK") {
+      localStorage.setItem("login_nativan", JSON.stringify({status:true, time:Date.now()}));
+      document.getElementById("loginScreen").style.display = "none";
+      loadData(true);
+      setTimeout(() => {
+        if (_hasOneSignal() && window.OneSignalDeferred) {
+          OneSignalDeferred.push(async os => {
+            const subscribed = await os.User.PushSubscription.optedIn;
+            if (!subscribed) await os.Notifications.requestPermission();
+          });
+        }
+        _checkNotifState();
+      }, 1500);
+    } else {
+      const el = document.getElementById("loginError");
+      el.textContent = "❌ Password salah, coba lagi";
+      el.style.animation = "none"; el.offsetWidth;
+      el.style.animation = "bounceIn .3s ease";
+    }
+  } catch(err) {
     const el = document.getElementById("loginError");
-    el.textContent = "❌ Password salah, coba lagi";
-    el.style.animation = "none"; el.offsetWidth; el.style.animation = "bounceIn .3s ease";
+    el.textContent = "❌ Koneksi bermasalah, coba lagi";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Masuk →";
   }
 }
 
 // ─── PUSH NOTIFICATION SYSTEM ────────────────────────
-// Mode 1: OneSignal (background push, saat app tertutup)
-// Mode 2: Native Web Notification API (fallback, saat app terbuka)
-// Keduanya jalan bersamaan jika OneSignal dikonfigurasi
-
 const _hasOneSignal = () =>
   ONESIGNAL_APPID !== "GANTI_DENGAN_APP_ID_ONESIGNAL_KAMU" &&
   ONESIGNAL_APPID !== "" && ONESIGNAL_APPID.length > 10;
 
-// Init OneSignal (hanya jika App ID sudah diisi)
 function _initOneSignal() {
   if (!_hasOneSignal()) return;
   window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -711,39 +672,19 @@ function _initOneSignal() {
   });
 }
 
-// Cek & tampilkan banner notifikasi
-// Dipanggil setelah login — selalu cek state permission
 function _checkNotifState() {
-  if (!("Notification" in window)) {
-    updateNotifBanner(false); // browser tidak support, sembunyikan
-    return;
-  }
-
-  if (Notification.permission === "granted") {
-    updateNotifBanner(false); // sudah izin, sembunyikan banner
-    return;
-  }
-
-  if (Notification.permission === "denied") {
-    // Diblokir — tampilkan banner info cara buka di settings
-    updateNotifBanner(true, "denied");
-    return;
-  }
-
-  // "default" — belum diminta, tampilkan banner ajakan
+  if (!("Notification" in window)) { updateNotifBanner(false); return; }
+  if (Notification.permission === "granted") { updateNotifBanner(false); return; }
+  if (Notification.permission === "denied")  { updateNotifBanner(true, "denied"); return; }
   updateNotifBanner(true, "ask");
 }
 
-// Minta izin — native dulu (langsung jalan saat diklik), lalu OneSignal subscribe
 async function askNotifPermission() {
   if (!("Notification" in window)) {
     showToast("Browser kamu tidak mendukung notifikasi", "warning");
     return;
   }
-
-  // Native requestPermission — ini yang harus dipanggil langsung dari user gesture (klik tombol)
   const perm = await Notification.requestPermission();
-
   if (perm === "granted") {
     updateNotifBanner(false);
     showToast(
@@ -752,34 +693,23 @@ async function askNotifPermission() {
         : "🔔 Notifikasi aktif! Kamu akan dapat notif saat app terbuka.",
       "success", 4500
     );
-
-    // Jika OneSignal tersedia, daftarkan juga untuk background push
     if (_hasOneSignal() && window.OneSignalDeferred) {
       try {
         OneSignalDeferred.push(async function(OneSignal) {
           await OneSignal.User.PushSubscription.optIn();
         });
-      } catch(e) {
-        console.warn("[OneSignal optIn]", e);
-      }
+      } catch(e) { console.warn("[OneSignal optIn]", e); }
     }
-
   } else if (perm === "denied") {
     updateNotifBanner(true, "denied");
     showToast("Notifikasi diblokir. Ubah di pengaturan browser.", "warning", 5000);
   }
 }
 
-// Update tampilan banner notifikasi
 function updateNotifBanner(show, state = "ask") {
   const banner = document.getElementById("notifBanner");
   if (!banner) return;
-
-  if (!show) {
-    banner.style.display = "none";
-    return;
-  }
-
+  if (!show) { banner.style.display = "none"; return; }
   if (state === "denied") {
     banner.style.display = "flex";
     banner.style.background = "linear-gradient(135deg, #6b7280, #4b5563)";
@@ -800,10 +730,8 @@ function updateNotifBanner(show, state = "ask") {
   }
 }
 
-// Kirim notifikasi lokal (saat app terbuka / foreground)
 function _sendLocalNotif(title, body) {
   if (!("Notification" in window) || Notification.permission !== "granted") return;
-
   const options = {
     body,
     icon:    "assets/icons/icon-192.png",
@@ -812,7 +740,6 @@ function _sendLocalNotif(title, body) {
     tag:     "nativan-" + Date.now(),
     data:    { url: window.location.href }
   };
-
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     navigator.serviceWorker.ready.then(reg => reg.showNotification(title, options));
   } else {
@@ -820,10 +747,8 @@ function _sendLocalNotif(title, body) {
   }
 }
 
-
 // ─── INIT ─────────────────────────────────────────────
 window.addEventListener("load", () => {
-  // Cek sesi (1 jam)
   const raw = localStorage.getItem("login_nativan");
   if (raw) {
     try {
@@ -837,15 +762,12 @@ window.addEventListener("load", () => {
   }
   localStorage.setItem("login_time", Date.now());
 
-  // Service Worker
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(e=>console.warn("[SW]",e));
   }
 
-  // OneSignal
   _initOneSignal();
 
-  // Form listeners
   document.getElementById("dompet").addEventListener("change", updateDetailDompet);
   updateDetailDompet(); updateTransferDetail("dari"); updateTransferDetail("ke");
 
