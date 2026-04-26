@@ -7,8 +7,44 @@
 
 // ─── CONFIG ──────────────────────────────────────────
 const SCRIPT_URL      = "https://script.google.com/macros/s/AKfycbwFIjzsnWDjjvyJPlE_cO5PSampIlqgI2IOY61YUqCTGZbaph1gSqYqb6Bhm9U84AE/exec";
-const APP_PASSWORD    = "nativan300424";
 const ONESIGNAL_APPID = "6f25ad6c-97c1-444a-9869-951998adc9e2"; // ← isi setelah daftar onesignal.com
+async function checkPassword() {
+  const v = document.getElementById("passwordInput").value;
+  if (!v) return;
+
+  const btn = document.querySelector(".btn-login");
+  btn.disabled = true;
+  btn.textContent = "Memeriksa...";
+
+  try {
+    const result = await gasCall({ action: "checkPassword", pwd: v });
+    if (result.status === "OK") {
+      localStorage.setItem("login_nativan", JSON.stringify({status:true, time:Date.now()}));
+      document.getElementById("loginScreen").style.display = "none";
+      loadData(true);
+      setTimeout(() => {
+        if (_hasOneSignal() && window.OneSignalDeferred) {
+          OneSignalDeferred.push(async os => {
+            const subscribed = await os.User.PushSubscription.optedIn;
+            if (!subscribed) await os.Notifications.requestPermission();
+          });
+        }
+        _checkNotifState();
+      }, 1500);
+    } else {
+      const el = document.getElementById("loginError");
+      el.textContent = "❌ Password salah, coba lagi";
+      el.style.animation = "none"; el.offsetWidth;
+      el.style.animation = "bounceIn .3s ease";
+    }
+  } catch(err) {
+    const el = document.getElementById("loginError");
+    el.textContent = "❌ Koneksi bermasalah, coba lagi";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Masuk →";
+  }
+}
 
 // ─── CACHE CONFIG ────────────────────────────────────
 const CACHE_KEY = "nativan_v5_cache";
